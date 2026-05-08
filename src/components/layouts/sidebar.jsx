@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 // Custom Hook
 // import { useSidebar } from "../../hooks/use-sidebar"
-import { useBranding } from "../../hooks/use-branding"
+
 
 import { Button } from "../../components/ui/button"
 import { useFetch } from "../../hooks/useFetch"
@@ -23,7 +23,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed, isMobile }) {
   const pathname = location.pathname
   const [sidebarGroups, setSidebarGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { data: profile } = useSelector((state) => state.profile);
+  const { data: profile, isLoading: profileLoading } = useSelector((state) => state.profile);
   console.log(profile, "profile in sidebar");
 
   // Fetch Services with Pipeline for Sidebar Dropdown
@@ -97,7 +97,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed, isMobile }) {
 
   // Use Custom Hooks for Data
   // const { sidebarGroups, isLoading } = useSidebar();
-  const { branding } = useBranding();
+
   const navigate = useNavigate();
   // const counts = useSidebarCounts();
 
@@ -268,17 +268,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed, isMobile }) {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsCollapsed(false)}
                 >
-                  {branding.logoUrl ? (
-                    <img
-                      src={branding.logoUrl}
-                      alt="Logo"
-                      className="w-6 h-6 object-contain absolute transition-opacity duration-200 opacity-100 group-hover:opacity-0"
-                    />
-                  ) : (
-                    <span className="font-bold text-lg absolute transition-opacity duration-200 opacity-100 group-hover:opacity-0">
-                      {branding.logoText}
-                    </span>
-                  )}
+                  <span className="font-bold text-lg">{profile?.name?.slice(0, 1) || "A"}</span>
                   <PanelLeftOpen className="w-5 h-5 absolute transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
 
                   {/* Tooltip for Toggle (Right Side) */}
@@ -297,18 +287,15 @@ export function Sidebar({ isCollapsed, setIsCollapsed, isMobile }) {
                     layout
                     className="w-9 h-9 rounded-[0.9rem] bg-slate-900 border border-slate-900 flex items-center justify-center text-white shrink-0"
                   >
-                    {branding.logoUrl ? (
-                      <img src={branding.logoUrl} alt="Logo" className="w-6 h-6 object-contain" />
-                    ) : (
-                      <span className="font-bold text-lg">{branding.logoText}</span>
-                    )}
+                    <span className="font-bold text-lg">{profile?.name?.slice(0, 1) || "A"}</span>
+
                   </motion.div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[1.35rem] text-slate-900 tracking-tight leading-none">
-                      {branding.logoExpandedText.title}
+                      {profile?.name || "Admin"}
                     </span>
                     <span className="text-[11px] text-slate-400 font-medium tracking-wide">
-                      {branding.logoExpandedText.subtitle}
+                      Admin Dashboard
                     </span>
                   </div>
                 </div>

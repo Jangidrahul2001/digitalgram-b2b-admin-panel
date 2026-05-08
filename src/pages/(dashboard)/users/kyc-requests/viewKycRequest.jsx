@@ -40,7 +40,7 @@ export default function UserDetailsPage() {
   const params = useParams();
   const navigate = useNavigate();
 
-  // const { users, updateUser } = useUsers(); // Get users from context
+  
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("kyc");
   const [user, setUser] = useState(null);

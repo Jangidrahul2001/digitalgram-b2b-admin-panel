@@ -1,8 +1,8 @@
-"use client";
+
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Clock1, Eye, Check, FileImage } from "lucide-react";
+import { Clock1, Eye, Check, FileImage, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { cn } from "../../../../lib/utils";
@@ -12,7 +12,6 @@ import { Select } from "../../../../components/ui/select";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
 import ImageModal from "../../../../components/ui/ImageModal";
 import { Skeleton } from "../../../../components/ui/skeleton";
-import { fundRequestStats } from "../../../../data/stats-data";
 import { DataTable } from "../../../../components/tables/data-table";
 import { PageLayout } from "../../../../components/layouts/page-layout";
 import { fetchAdminWallet } from "../../../../store/slices/walletSlice";
@@ -23,6 +22,15 @@ import { ActionButtons } from "../../../../components/ui/ActionButtons";
 import StatusBadge from "../../../../components/ui/StatusBadge";
 import ExpandableMessage from "../../../../components/ui/ExpandableMessage";
 import ClickToCopy from "../../../../components/ui/ClickToCopy";
+
+
+const fundRequestStats = {
+  approved: { label: "Approved Fund Request", count: 0, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", icon: CheckCircle2 },
+  pending: { label: "Pending Fund Request", count: 0, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100", icon: Clock },
+  rejected: { label: "Reject Fund Request", count: 0, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", icon: XCircle },
+  approvedAmount: { label: "Total Approved", ruppee:true, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", icon: CheckCircle2 },
+  rejectedAmount: { label: "Total Rejected", ruppee:true, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", icon: XCircle },
+}
 
 
 export default function FundRequestPage() {

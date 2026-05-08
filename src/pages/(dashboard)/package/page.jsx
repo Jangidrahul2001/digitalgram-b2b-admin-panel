@@ -13,7 +13,6 @@ import {
 import { Trash2 } from "lucide-react";
 import { SidebarPageTransition } from "../../../components/ui/sidebar-page-transition";
 import { Select } from "../../../components/ui/select";
-import { apiClient, ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
 import { ConfirmationModal } from "../../../components/modals/confirmation-modal";
 import { motion, AnimatePresence } from "framer-motion";
