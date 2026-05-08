@@ -233,20 +233,7 @@ export const MOCK_SIDEBAR_CONFIG = [
   },
 ];
 
-export const MOCK_BRANDING_CONFIG = {
-  appName: "Admin Dashboard",
-  logoText: "A",
-  logoUrl: "", // Add URL here (e.g. "https://via.placeholder.com/40") to override text
-  faviconUrl: "/favicon.ico",
-  logoExpandedText: {
-    title: "Admin",
-    subtitle: "Dashboard",
-  },
-  colors: {
-    primary: "orange-500", // Tailwind class
-    primaryLight: "orange-100",
-  },
-};
+
 
 export const permissionCheckData = {
   "/dashboard": "DASHBOARD",

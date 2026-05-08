@@ -298,7 +298,10 @@ export function Header({ isCollapsed, setIsCollapsed, isMobile }) {
                 >
                   <motion.button onClick={() => setIsOpen(!isOpen)}>
                     <img
-                      src={profile?.imgUrl || `https://ui-avatars.com/api/?name=${profile?.name}&background=0f172a&color=fff`}
+                      src={
+                        profile?.imgUrl ||
+                        `https://ui-avatars.com/api/?name=${profile?.name?.charAt(0)}&background=0f172a&color=fff`
+                      }
                       alt="Avatar"
                       className="h-full w-full object-cover"
                     />
