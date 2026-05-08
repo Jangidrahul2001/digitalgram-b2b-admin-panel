@@ -290,12 +290,12 @@ export function Sidebar({ isCollapsed, setIsCollapsed, isMobile }) {
                     <span className="font-bold text-lg">{profile?.name?.slice(0, 1) || "A"}</span>
 
                   </motion.div>
-                  <div className="flex flex-col">
+                 <div className="flex flex-col">
                     <span className="font-bold text-[1.35rem] text-slate-900 tracking-tight leading-none">
-                      {profile?.name || "Admin"}
+                      Admin
                     </span>
                     <span className="text-[11px] text-slate-400 font-medium tracking-wide">
-                      Admin Dashboard
+                      {profile?.name||"Admin"}
                     </span>
                   </div>
                 </div>

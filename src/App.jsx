@@ -138,8 +138,8 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      {/* <BrowserRouter basename="/admin"> */}
-      <BrowserRouter >
+      <BrowserRouter basename="/admin">
+      {/* <BrowserRouter > */}
         <Routes>
           <Route element={<RootLayout />}>
             <Route
