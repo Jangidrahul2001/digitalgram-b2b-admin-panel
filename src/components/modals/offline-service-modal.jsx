@@ -23,8 +23,8 @@ export function OfflineServiceModal({ isOpen, onClose, serviceId }) {
     `${apiEndpoints.fetchOfflineServiceById}/${serviceId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setService(data.data);
+        if (data?.success && data?.data) {
+          setService(data?.data);
         }
       },
       onError: (error) => {

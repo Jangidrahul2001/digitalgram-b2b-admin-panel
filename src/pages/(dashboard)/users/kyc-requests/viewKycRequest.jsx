@@ -52,8 +52,10 @@ export default function UserDetailsPage() {
     `${apiEndpoints?.fetchKycById}/${params.userId}`,
     {
       onSuccess: (data) => {
-        setUser(data.data);
-        setIsLoading(false);
+        if(data?.success && data?.data){
+          setUser(data?.data);
+          setIsLoading(false);
+        }
       },
       onError: (error) => {
         console.error("Error fetching initial data:", error);
@@ -166,11 +168,11 @@ function KYCTab({ user, refetchKycDetails }) {
 
   const { patch: updateUserKyc } = usePatch({
     onSuccess: (data) => {
-      if (data.success) {
+      if (data?.success && data?.data) {
         toast.success(data.message || "KYC Status updated successfully");
         refetchKycDetails();
         setUpdatingKycRequestStatus(false)
-        if (data.data.kycStatus === "rekyc" || data.data.kycStatus === "rejected") {
+        if (data?.data?.kycStatus === "rekyc" || data?.data?.kycStatus === "rejected") {
           navigate(-1)
         }
         else {

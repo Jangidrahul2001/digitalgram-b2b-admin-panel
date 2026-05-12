@@ -14,6 +14,7 @@ import { Select } from "../../../../components/ui/select";
 import { Textarea } from "../../../../components/ui/textarea";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../../../../components/ui/dropdown-menu";
 import StatusBadge from "../../../../components/ui/StatusBadge";
+import ClickToCopy from "../../../../components/ui/ClickToCopy";
 export default function ServiceRequestsPage() {
   const [serviceRequests, setServiceRequests] = useState([]);
   const navigate = useNavigate();
@@ -52,9 +53,9 @@ export default function ServiceRequestsPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setServiceRequests(data.data);
-          setTotalRecords(data.pagination.total || 0);
+        if (data?.success && data?.data) {
+          setServiceRequests(data?.data);
+          setTotalRecords(data?.pagination?.total || 0);
           setIsLoading(false);
         }
       },
@@ -200,10 +201,15 @@ export default function ServiceRequestsPage() {
         accessorKey: "fullName",
         header: "FULL NAME",
         cell: ({ row }) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <span className="font-semibold text-slate-900 text-[13px]">
               {row.getValue("fullName")}
             </span>
+            <ClickToCopy text={row.original.userName}>
+              <span className="text-[11px] text-center text-slate-500 font-medium hover:text-slate-700 cursor-pointer transition-colors inline-block mt-0.5">
+                ( {row.original.userName} )
+              </span>
+            </ClickToCopy>
           </div>
         ),
       },

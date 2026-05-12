@@ -42,12 +42,12 @@ const BannersTab = () => {
 
   const { patch: toggleBannerStatus } = usePatch({
     onSuccess: (data) => {
-      if (data.success) {
+      if (data?.success ) {
         toast.success(data.message || "Banner status updated successfully")
         setBanners(prev =>
           prev.map(banner =>
-            banner._id === data.data._id
-              ? { ...banner, isActive: data.data.isActive }
+            banner._id === data?.data._id
+              ? { ...banner, isActive: data?.data.isActive }
               : banner
           )
         )
@@ -118,8 +118,8 @@ const BannersTab = () => {
     `${apiEndpoints.fetchAllBanners}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setBanners(data.data)
+        if (data?.success && data?.data) {
+          setBanners(data?.data)
           setIsLoadingBanners(false)
         }
       },

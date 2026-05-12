@@ -104,9 +104,9 @@ export default function CouponPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setCoupons(data.data);
-          setTotalRecords(data.pagination?.total);
+        if (data?.success && data?.data) {
+          setCoupons(data?.data);
+          setTotalRecords(data?.pagination?.total);
           setFetching(false);
         }
       },

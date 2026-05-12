@@ -37,9 +37,8 @@ export default function KycRequestsPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
-          console.log(data.data);
-          const mappedKyc = data.data.map((u, indx) => ({
+        if (data?.success && data?.data) {
+          const mappedKyc = data?.data?.map((u, indx) => ({
             ...u,
             id: pageIndex * pageSize - pageSize + indx + 1,
             name:

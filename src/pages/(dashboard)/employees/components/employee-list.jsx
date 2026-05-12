@@ -27,9 +27,9 @@ export function EmployeeList() {
     `${apiEndpoints.employeeList}?page=${pageIndex}&limit=${pageSize}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setEmployees(data.data);
-          setTotalRecords(data.pagination.total);
+        if (data?.success && data?.data) {
+          setEmployees(data?.data);
+          setTotalRecords(data?.pagination?.total);
         }
         setIsLoading(false);
       },

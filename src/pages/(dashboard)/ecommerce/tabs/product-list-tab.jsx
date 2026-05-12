@@ -31,9 +31,9 @@ export function ProductListTab({
     `${apiEndpoints.fetchProducts}?page=${pageIndex}&limit=${pageSize}&search=${searchQuery}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setProducts(data.data);
-          setTotalRecords(data.pagination.total);
+        if (data?.success && data?.data) {
+          setProducts(data?.data);
+          setTotalRecords(data?.pagination?.total);
         }
         setIsLoading(false);
       },

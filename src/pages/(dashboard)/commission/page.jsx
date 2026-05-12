@@ -73,8 +73,8 @@ export default function CommissionPage() {
     `${apiEndpoints.fetchRole}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((role) => ({
+        if (data?.success && data?.data ) {
+          const temp = data?.data?.map((role) => ({
             label: role.name,
             value: role._id,
             ...role,
@@ -93,8 +93,8 @@ export default function CommissionPage() {
     `${apiEndpoints.fetchPackages}/${selectedRole}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((pac) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((pac) => ({
             label: pac.name,
             value: pac._id,
             ...pac,
@@ -119,8 +119,8 @@ export default function CommissionPage() {
     `${apiEndpoints.fetchServices}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((service) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((service) => ({
             label: service.label,
             value: service._id,
             ...service,
@@ -140,8 +140,8 @@ export default function CommissionPage() {
     `${apiEndpoints.fetchPipelineByServiceId}?serviceId=${selectedService}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((pipeline) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((pipeline) => ({
             label: pipeline.label,
             value: pipeline.code,
             ...pipeline,
@@ -175,9 +175,9 @@ export default function CommissionPage() {
     `${services.find((s) => s.value === selectedService)?.name === "bbps" ? apiEndpoints.fetchBbpsCategory : apiEndpoints.fetchRechargeCategory}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          console.log(data.data);
-          const temp = data.data?.map((cat) => ({
+        if (data?.success && data?.data) {
+         
+          const temp = data?.data?.map((cat) => ({
             label: cat.name,
             value: cat._id,
             ...cat,
@@ -201,9 +201,8 @@ export default function CommissionPage() {
     `${apiEndpoints.commisionDetails}?packageId=${selectedPackage}&serviceId=${selectedService}&pipeline=${selectedPipeline}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          console.log(data, "commission datatatatataat");
-          const temp = data.data?.map((service, index) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((service, index) => ({
             ...service,
             id: index + 1,
             status: service.status ?? true,

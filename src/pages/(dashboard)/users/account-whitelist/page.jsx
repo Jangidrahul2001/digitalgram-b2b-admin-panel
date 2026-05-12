@@ -40,8 +40,8 @@ export default function AccountWhitelistPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const userOptions = data.data.map(user => ({
+        if (data?.success && data?.data ) {
+          const userOptions = data?.data?.map(user => ({
             label: `${user.fullName} (${user.userName})`,
             shortLabel: user.fullName,
             value: user._id
@@ -74,9 +74,9 @@ export default function AccountWhitelistPage() {
     }${date.to ? `&endDate=${format(date.to, "yyyy-MM-dd")}` : ""}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setWhiteListRequest(data.data);
-          setTotalRecords(data.pagination?.total || 0);
+        if (data?.success && data?.data) {
+          setWhiteListRequest(data?.data);
+          setTotalRecords(data?.pagination?.total || 0);
         }
         setIsLoading(false);
       },

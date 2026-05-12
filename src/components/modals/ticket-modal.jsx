@@ -26,8 +26,8 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
     `${apiEndpoints.fetchSupportTicketById}/${ticketId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setTicket(data.data);
+        if (data?.success && data?.data) {
+          setTicket(data?.data);
         }
       },
       onError: (error) => {

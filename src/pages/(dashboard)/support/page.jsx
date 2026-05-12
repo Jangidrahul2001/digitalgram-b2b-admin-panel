@@ -59,9 +59,9 @@ export default function SupportPage() {
     apiEndpoints.fetchServices,
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
           const options = [{ label: "All Services", value: "all" }];
-          data.data.forEach((service) => {
+          data?.data?.forEach((service) => {
             options.push({
               label: service.name,
               shortLabel: service.name,
@@ -100,8 +100,8 @@ export default function SupportPage() {
     {
       onSuccess: (data) => {
         if (data.success) {
-          setTickets(data.data);
-          setTotalRecords(data.pagination.total);
+          setTickets(data?.data || []);
+          setTotalRecords(data?.pagination?.total || 0);
         }
         setIsLoading(false);
       },
@@ -118,7 +118,7 @@ export default function SupportPage() {
     `${apiEndpoints.fetchSupportStats}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
           const temp = Object.keys(data?.data)?.map((status) => {
             return { label: status, value: data?.data[status] };
           });

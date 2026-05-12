@@ -147,9 +147,9 @@ export function OrderViewTab({ orderId, handleTabChange }) {
     `${apiEndpoints.fetchOrderById}/${orderId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setOrder(data.data);
-          setCurrentStatus(data.data?.orderStatus || "processing");
+        if (data?.success && data?.data) {
+          setOrder(data?.data);
+          setCurrentStatus(data?.data?.orderStatus || "processing");
         }
       },
       onError: (error) => {

@@ -15,8 +15,8 @@ const OfflineServiceRequestModal = ({ isOpen, onClose, requestId }) => {
     `${apiEndpoints.fetchOfflineServiceRequestData}/${requestId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setRequestData(data.data);
+        if (data?.success && data?.data) {
+          setRequestData(data?.data);
         }
       },
       onError: (error) => {

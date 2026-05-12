@@ -189,12 +189,12 @@ export default function PolicyTab({ title }) {
     `${apiEndpoints.fetchPolicy}?type=${title === "Terms & Condition" ? "terms" : title === "Privacy Policy" ? "privacy" : "refund"}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
           setFormData({
-            siteTitle: data.data.siteTitle || "",
-            policyHeading: data.data.policyHeading || ""
+            siteTitle: data?.data.siteTitle || "",
+            policyHeading: data?.data.policyHeading || ""
           })
-          editor.commands.setContent(data.data.content || "");
+          editor.commands.setContent(data?.data.content || "");
           setIsLoading(false);
         }
       },

@@ -33,6 +33,9 @@ import ClickToCopy from "../../../../components/ui/ClickToCopy";
 import { ActionButtons } from "../../../../components/ui/ActionButtons";
 
 export default function TransactionSearchPage() {
+  const [reportData, setReportData] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [internalLoading, setInternalLoading] = useState(false);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
@@ -54,9 +57,9 @@ export default function TransactionSearchPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
           const options = [{ label: "All Users", value: "all" }];
-          const users = data.data.map((user) => ({
+          const users = data?.data?.map((user) => ({
             label: `${user?.fullName || "User"} (${user.userName || "userId"})`,
             value: user._id,
           }));
@@ -84,43 +87,11 @@ export default function TransactionSearchPage() {
     return params;
   }, [currentPage, pageSize, date, selectedUser, search]);
 
-  // Fetch data
-  const {
-    data: ledgerResponse,
-    error,
-    refetch,
-  } = useFetch(
-    apiEndpoints.allLedgerEntry,
-    {
-      onError: (error) => console.error("Failed to fetch transaction data:", error),
-    },
-    false,
-    true
-  );
 
-  // Fetch data when filters change
-  React.useEffect(() => {
-    const params = buildQueryParams();
-    refetch(params);
-  }, [buildQueryParams, refetch]);
 
-  // Process data
-  const { reportData, totalRecords } = useMemo(() => {
-    if (!ledgerResponse?.success || !ledgerResponse?.data) {
-      return { reportData: [], totalRecords: 0 };
-    }
 
-    const data = ledgerResponse.data.data || ledgerResponse.data || [];
-    return {
-      reportData: Array.isArray(data) ? data : [],
-      totalRecords:
-        ledgerResponse.data.totalRecords ||
-        ledgerResponse.totalRecords ||
-        (Array.isArray(data) ? data.length : 0),
-    };
-  }, [ledgerResponse]);
 
-  const internalLoading = !ledgerResponse && !error;
+
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -201,18 +172,13 @@ export default function TransactionSearchPage() {
         accessorKey: "referenceId",
         header: "REFERENCE ID",
         center: true,
-        cell: ({ row }) => {
-          const refId = row.getValue("referenceId");
-          return (
-            < ClickToCopy text={refId}>
-              <div className="flex items-center justify-center gap-2 group min-w-0">
-                <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[11px] font-extrabold text-slate-900 tracking-tight whitespace-nowrap border border-slate-200">
-                  {refId}
-                </span>
-              </div>
-            </ClickToCopy>
-          );
-        },
+        cell: ({ row }) => (
+          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+              {row.original.referenceId}
+            </span>
+          </ClickToCopy>
+        )
       },
       {
         accessorKey: "description",

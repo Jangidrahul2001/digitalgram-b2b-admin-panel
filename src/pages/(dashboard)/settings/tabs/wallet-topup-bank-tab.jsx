@@ -181,8 +181,8 @@ export function WalletTopupBankTab() {
     `${apiEndpoints?.fetchAllBankTopup}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setTopUpBankList(data.data);
+        if (data?.success && data?.data) {
+          setTopUpBankList(data?.data);
           setIsLoading(false);
         }
       },

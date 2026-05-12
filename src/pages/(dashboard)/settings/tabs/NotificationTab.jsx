@@ -20,8 +20,8 @@ const NotificationTab = () => {
         `${apiEndpoints.fetchAllNotifications}${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`,
         {
             onSuccess: (data) => {
-                if (data.success) {
-                    setNotifications(data.data)
+                if (data?.success && data?.data) {
+                    setNotifications(data?.data)
                 }
             },
             onError: (error) => toast.error(handleValidationError(error) || "Failed to fetch notifications")

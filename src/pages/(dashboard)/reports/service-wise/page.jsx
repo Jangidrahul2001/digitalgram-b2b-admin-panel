@@ -185,9 +185,9 @@ export default function ServiceWiseReportPage() {
     apiEndpoints?.[apiKeys?.[apiKey]],
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setReportsData(data.data || [])
-          setTotalRecords(data.pagination?.total || 0)
+        if (data?.success && data?.data) {
+          setReportsData(data?.data || [])
+          setTotalRecords(data?.pagination?.total || 0)
         }
       },
       onError: (error) =>
@@ -205,8 +205,8 @@ export default function ServiceWiseReportPage() {
     apiEndpoints?.[statsApiKey?.[apiKey]],
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setStatsData(data.data)
+        if (data?.success && data?.data) {
+          setStatsData(data?.data)
         }
 
       },
@@ -383,11 +383,11 @@ export default function ServiceWiseReportPage() {
         header: "REFERENCE ID",
         center: true,
         cell: ({ row }) => (
-          <ClickToCopy text={row.getValue("referenceId")}>
-            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[11px] font-extrabold text-slate-900 whitespace-nowrap border border-slate-200">
-              {row.getValue("referenceId")}
-            </span>
-          </ClickToCopy>
+          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+          <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+            {row.original.referenceId}
+          </span>
+        </ClickToCopy>
         ),
       },
       {

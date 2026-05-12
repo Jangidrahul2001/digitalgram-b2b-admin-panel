@@ -56,9 +56,9 @@ export default function OnlineServicesPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setServices(data.data);
-          setTotalRecords(data.pagination?.total || 0);
+        if (data?.success && data?.data) {
+          setServices(data?.data);
+          setTotalRecords(data?.pagination?.total || 0);
         }
         setIsLoading(false);
       },

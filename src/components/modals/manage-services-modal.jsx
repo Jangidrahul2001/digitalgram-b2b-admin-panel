@@ -67,8 +67,8 @@ export function ManageServicesModal({ isOpen, onClose, selectedServices = [], on
     `${apiEndpoints.fetchServicesWithPipeline}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setServicesWithPipeline(data.data)
+        if (data?.success && data?.data) {
+          setServicesWithPipeline(data?.data)
         }
       },
       onError: (error) => {

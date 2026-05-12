@@ -86,15 +86,14 @@ export default function PackagePage() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [search, setSearch] = useState("");
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [pageSize, setPageSize] = useState(50);
-  const [pageIndex, setPageIndex] = useState(1);
+
 
   const { refetch: fetchRoles } = useFetch(
     `${apiEndpoints.fetchRole}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((role) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((role) => ({
             label: role.name,
             value: role._id,
             ...role,
@@ -115,8 +114,10 @@ export default function PackagePage() {
     `${apiEndpoints.fetchPackages}`,
     {
       onSuccess: (data) => {
-        setPackages(data.data);
-        setFetching(false);
+        if (data?.success && data?.data) {
+          setPackages(data?.data);
+          setFetching(false);
+        }
       },
       onError: (error) => {
         console.error("Error fetching packages:", error);
@@ -176,12 +177,7 @@ export default function PackagePage() {
     }
   };
 
-  const handlePageChange = (newPageIndex, newPageSize) => {
-    if (newPageIndex !== pageIndex || newPageSize !== pageSize) {
-      setPageIndex(newPageIndex);
-      setPageSize(newPageSize);
-    }
-  };
+
 
   // --- Update Name Handlers ---
   const openEditModal = (pkg) => {
@@ -279,7 +275,7 @@ export default function PackagePage() {
       id: "actions",
       header: "ACTIONS",
       cell: ({ row }) => (
-        <ActionButtons 
+        <ActionButtons
           onEdit={() => openEditModal(row.original)}
           onDelete={() => initiateDelete(row.original)}
         />
@@ -446,18 +442,15 @@ export default function PackagePage() {
         <div className="bg-white rounded-[1.5rem] border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
           <div className="p-0">
             <DataTable
+              hidePagination={true}
               columns={columns}
               data={packages}
               isLoading={fetching}
               loadingMessage="Fetching packages..."
               columnVisibility={columnVisibility}
               setColumnVisibility={setColumnVisibility}
-              pageSize={pageSize}
-              totalRecords={packages.length}
-              onPaginationChange={({ pageIndex, pageSize }) => {
-                handlePageChange(pageIndex, pageSize);
-                setFetching(true);
-              }}
+
+
               onSearch={(val) => setSearch(val)}
               exportData={packages}
               exportColumns={columns}

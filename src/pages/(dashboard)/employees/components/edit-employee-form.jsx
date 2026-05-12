@@ -27,8 +27,8 @@ export function EditEmployeeForm({ employeeId, isOpen, onClose }) {
     `${apiEndpoints.permissionList}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setModulePermission(data.data);
+        if (data?.success && data?.data) {
+          setModulePermission(data?.data);
         }
       },
       onError: (error) => {
@@ -44,8 +44,8 @@ export function EditEmployeeForm({ employeeId, isOpen, onClose }) {
     `${apiEndpoints.fetchEmployeeById}/${employeeId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const emp = data.data;
+        if (data?.success && data?.data) {
+          const emp = data?.data;
           setFormData({
             name: emp.name || "",
             email: emp.email || "",
