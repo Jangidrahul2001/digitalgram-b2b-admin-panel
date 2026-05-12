@@ -195,7 +195,7 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
       setErrors({});
       setIsSubmitting(false);
       setShowConfirmModal(false)
-      refetch(); // Refresh the transactions table
+      // refetch(); // Refresh the transactions table
       fetchParticularUser()
       dispatch(fetchAdminWallet());
     },
