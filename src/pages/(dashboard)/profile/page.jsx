@@ -147,8 +147,8 @@ export default function ProfilePage() {
     >
       {/* Header Section with Profile Banner */}
       <div className="relative group">
-        <div className="relative w-full h-[200px] md:h-[240px] rounded-[2rem]  overflow-hidden shadow-sm border border-slate-50 mb-6">
-          {/* <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" /> */}
+        <div className="relative w-full h-[200px] md:h-[240px] rounded-[2rem] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden shadow-sm border border-slate-50 mb-6">
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
           <div className="absolute top-6 right-6">
@@ -186,17 +186,7 @@ export default function ProfilePage() {
                   </span>
                 </h1>
               </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-8 text-[13px] text-slate-400 font-bold">
-                <span className="flex items-center gap-2.5 hover:text-slate-600 transition-colors cursor-default">
-                  <Briefcase className="w-4 h-4 text-slate-300" /> Administrative Hub
-                </span>
-                <span className="flex items-center gap-2.5 hover:text-slate-600 transition-colors cursor-default">
-                  <Clock className="w-4 h-4 text-slate-300" /> Last Active: 2 mins ago
-                </span>
-                <span className="flex items-center gap-2.5 hover:text-slate-600 transition-colors cursor-default">
-                  <MapPin className="w-4 h-4 text-slate-300" /> New Delhi, IN
-                </span>
-              </div>
+             
             </div>
           </div>
 

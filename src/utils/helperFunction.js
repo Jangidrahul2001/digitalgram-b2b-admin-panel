@@ -177,3 +177,19 @@ export const gstRegex =
 export const nameRegex = /^[A-Za-z]{3,}$/;
 export const nameWithSpaceRegex = /^[A-Za-z]{3,}(?:\s+[A-Za-z]{3,})*$/;
 export const urlRegex = /^https?:\/\/.+/
+
+
+export const ServiceLabel = (service) => {
+  const services = {
+    aeps: "AEPs",
+    bbps: "Bill Payment",
+    dmt: "Money Transfer",
+    "aeps-payout": "AEPs-Payout",
+    "xpress-payout": "Xpress-Payout",
+    recharge: "Recharge",
+    "offline-services": "Offline Services",
+    "online-services": "Online Services",
+    "upi-payout": "UPI-Payout",
+  };
+  return services?.[service] || service;
+};

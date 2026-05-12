@@ -29,6 +29,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { LoadingScreen } from "../../../../components/ui/loading-screen";
 import { usePatch } from "../../../../hooks/usePatch";
 import { AnimatePresence, motion } from "framer-motion";
+import ImageModal from "../../../../components/ui/ImageModal";
 
 const InfoField = ({ label, value, fullWidth }) => (
   <div
@@ -41,7 +42,7 @@ const InfoField = ({ label, value, fullWidth }) => (
   </div>
 );
 
-const DocPreview = ({ label, url }) => {
+const DocPreview = ({ label, url, onView }) => {
   const [hasError, setHasError] = useState(false);
   const fullUrl = `${import.meta.env.VITE_API_URL}${url}`;
   const isPdf = url?.toLowerCase().endsWith(".pdf");
@@ -61,6 +62,33 @@ const DocPreview = ({ label, url }) => {
       </div>
     );
   }
+
+  const handleView = () => {
+    if (!url) return;
+
+    if (isPdf) {
+      const filename = url.substring(url.lastIndexOf("/") + 1) || label;
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        newWindow.document.title = filename;
+        newWindow.document.body.style.margin = "0";
+        newWindow.document.body.style.height = "100vh";
+
+
+        const iframe = newWindow.document.createElement("iframe");
+        iframe.src = fullUrl;
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "none";
+        newWindow.document.body.appendChild(iframe);
+
+      }
+
+    }
+    else {
+      onView(fullUrl);
+    }
+  };
 
   return (
     <div className="border border-slate-100 bg-slate-50/50 rounded-2xl p-3 flex flex-col items-center gap-2 bg-white transition-all hover:shadow-lg hover:shadow-slate-200/50 cursor-pointer group">
@@ -88,7 +116,7 @@ const DocPreview = ({ label, url }) => {
           variant="outline"
           size="sm"
           className="h-7 px-3 text-[11px] font-bold rounded-lg border-slate-200 hover:bg-slate-900 hover:text-white transition-all"
-          onClick={() => window.open(fullUrl, "_blank")}
+          onClick={handleView}
         >
           View
         </Button>
@@ -97,6 +125,8 @@ const DocPreview = ({ label, url }) => {
   );
 };
 const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [updatingSection, setUpdatingSection] = useState({ name: "", status: "" });
   const [isLoading, setIsLoading] = useState(true);
@@ -104,6 +134,10 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
   const navigate = useNavigate();
   const [showKyc, setShowKyc] = useState(false)
   const [updatingKycRequestStatus, setUpdatingKycRequestStatus] = useState(false);
+  const handleView = (url) => {
+    setSelectedImage(url)
+    setImageModalOpen(true)
+  }
 
   const { refetch: refetchKycDetails } = useFetch(
     `${apiEndpoints?.fetchKycByUserId}/${params.userId}`,
@@ -505,6 +539,7 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
                     <DocPreview
                       label="Shop Front View"
                       url={userKyc?.shopImageUrl}
+                      onView={handleView}
                     />
                   </div>
                 </div>
@@ -545,7 +580,7 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
 
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  mt-3">
-                  <DocPreview label="Blank Cheque" url={userKyc?.blankChequeUrl} />
+                  <DocPreview label="Blank Cheque" url={userKyc?.blankChequeUrl} onView={handleView} />
                 </div>
               </div>
 
@@ -578,8 +613,8 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                  <DocPreview label="Aadhaar" url={userKyc?.aadharFileUrl} />
-                  <DocPreview label="PAN" url={userKyc?.panFileUrl} />
+                  <DocPreview label="Aadhaar" url={userKyc?.aadharFileUrl} onView={handleView} />
+                  <DocPreview label="PAN" url={userKyc?.panFileUrl} onView={handleView} />
                 </div>
               </div>
             </CardContent>
@@ -619,6 +654,10 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
           currentStatus={userKyc?.status}
           userName={`${userKyc?.firstName} ${userKyc?.lastName}`}
         />
+        <ImageModal isOpen={imageModalOpen} onClose={() => {
+          setImageModalOpen(false)
+          setSelectedImage(null)
+        }} images={selectedImage ? [selectedImage] : []} />
       </>
     </div>
   );

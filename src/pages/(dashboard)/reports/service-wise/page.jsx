@@ -16,6 +16,7 @@ import {
   formatDate,
   formatToINR,
   handleValidationError,
+  ServiceLabel,
 } from "../../../../utils/helperFunction";
 import { cn } from "../../../../lib/utils";
 import { motion } from "framer-motion";
@@ -54,11 +55,16 @@ const StatCard = ({ label, count, amount, type, icon: Icon, subLabel1, subLabel2
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">{subLabel1 || "Total Count"}</span>
-              <span className={cn("text-lg font-black", styles.text)}>{count}</span>
+              <span className={cn("text-lg font-black truncate ", styles.text)} title={count}>{count}</span>
             </div>
             <div className="flex items-center justify-between pt-1">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">{subLabel2 || "Total Amount"}</span>
-              <span className={cn("text-lg font-black", styles.text)}>{amount}</span>
+              <span
+                className={cn("text-lg font-black truncate", styles.text)}
+                title={amount}
+              >
+                {amount}
+              </span>
             </div>
           </div>
         ) : (
@@ -99,6 +105,8 @@ export default function ServiceWiseReportPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [statsData, setStatsData] = useState({})
+  const [reportData, setReportsData] = useState([])
+  const [totalRecords, setTotalRecords] = useState(0)
 
   // Filter states
   const [selectedUser, setSelectedUser] = useState("");
@@ -142,34 +150,27 @@ export default function ServiceWiseReportPage() {
     return params;
   }, [currentPage, pageSize, selectedUser, date]);
 
-  const serviceNames = {
-    "recharge": "Recharge",
-    "dmt": "Money Transfer",
-    "bbps": "Bill Payments",
-    "aeps": "AEPs",
-    "xpress-payout": "Xpress Payout",
-    "aeps-payout": "Aeps Payout",
-  }
+
 
   const apiKeys = {
     "bbps-bbps1": "bbpsReport",
-    "dmt-dmt1": "cashbackReport",
+    "dmt-dmt1": "dmtReport",
     "recharge-recharge1": "rechargeReport",
-    "xpress-payout-xpress-payout1": "",
-    "aeps-aeps1": "",
-    "aeps-aeps2": "",
-    "aeps-payout-aeps-payout1": "",
+    "xpress-payout-xpress-payout1": "xpressPayoutReport",
+    "aeps-aeps1": "aeps1Report",
+    "aeps-aeps2": "aeps2Report",
+    "aeps-payout-aeps-payout1": "aepsPayoutReport",
 
   }
 
   const statsApiKey = {
     "bbps-bbps1": "bbpsStats",
-    "dmt-dmt1": "cashbackReport",
+    "dmt-dmt1": "dmtStats",
     "recharge-recharge1": "rechargeStats",
-    "xpress-payout-xpress-payout1": "",
-    "aeps-aeps1": "",
-    "aeps-aeps2": "",
-    "aeps-payout-aeps-payout1": "",
+    "xpress-payout-xpress-payout1": "xpressPayoutStats",
+    "aeps-aeps1": "aeps1Stats",
+    "aeps-aeps2": "aeps2Stats",
+    "aeps-payout-aeps-payout1": "aepsPayoutStats",
 
 
   }
@@ -177,13 +178,18 @@ export default function ServiceWiseReportPage() {
 
   // Fetch service-wise report data
   const {
-    data: reportResponse,
     error,
     refetch,
     isLoading: reportLoading
   } = useFetch(
     apiEndpoints?.[apiKeys?.[apiKey]],
     {
+      onSuccess: (data) => {
+        if (data.success) {
+          setReportsData(data.data || [])
+          setTotalRecords(data.pagination?.total || 0)
+        }
+      },
       onError: (error) =>
         console.error("Failed to fetch service report:", error),
     },
@@ -229,8 +235,8 @@ export default function ServiceWiseReportPage() {
       return [
         allUserOption,
         ...usersData.data.map((user) => ({
-          label: `${user.fullName} (${user.userName})`.toLowerCase(),
-          shortLabel: (user.fullName || user.userName).toLowerCase(),
+          label: `${user.fullName} (${user.userName})`,
+          shortLabel: (user.fullName),
           value: user._id,
         }))
       ];
@@ -239,23 +245,7 @@ export default function ServiceWiseReportPage() {
   }, [usersData]);
 
 
-  // Process report data
-  const { reportData, totalRecords } = useMemo(() => {
-    if (!reportResponse?.success || !reportResponse?.data) {
-      return { reportData: [], totalRecords: 0 };
-    }
 
-    return {
-      reportData: Array.isArray(reportResponse.data) ? reportResponse.data : (reportResponse.data.data || []),
-      totalRecords:
-        reportResponse.pagination?.total ||
-        reportResponse.total ||
-        reportResponse.totalRecords ||
-        reportResponse.data?.totalRecords ||
-        reportResponse.data?.length ||
-        0,
-    };
-  }, [reportResponse]);
 
 
   const handleSearch = () => {
@@ -337,13 +327,57 @@ export default function ServiceWiseReportPage() {
               {row.original.kycStatus === "approved" && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
             </div>
             <ClickToCopy text={row.original.userId} className={"text-[11px] text-slate-500  mt-0.5"}>
-            
-                ({row.original.userName})
-              
+
+              ({row.original.userName})
+
             </ClickToCopy>
           </div>
         ),
       },
+      ...(service === "bbps" ? [
+
+        {
+          accessorKey: "category",
+          header: "Category",
+          center: true,
+          cell: ({ row }) => (
+            <span className="text-slate-600 font-medium whitespace-nowrap">
+              {(row.getValue("category"))}
+            </span>
+          ),
+        },] : []),
+      ...(service === "recharge" ? [
+        {
+          accessorKey: "mobileNumber",
+          header: "Mobile Number",
+          center: true,
+          cell: ({ row }) => (
+            <span className="text-slate-600 font-medium whitespace-nowrap">
+              {(row.getValue("mobileNumber"))}
+            </span>
+          ),
+        },
+        {
+          accessorKey: "operatorName",
+          header: "Operator Name",
+          center: true,
+          cell: ({ row }) => (
+            <span className="text-slate-600 font-medium whitespace-nowrap">
+              {(row.getValue("operatorName"))}
+            </span>
+          ),
+        },] : []),
+      ...(service === "aeps" ? [
+        {
+          accessorKey: "serviceType",
+          header: "Category",
+          center: true,
+          cell: ({ row }) => (
+            <span className="text-slate-600 font-medium whitespace-nowrap">
+              {(row.getValue("serviceType"))}
+            </span>
+          ),
+        },] : []),
       {
         accessorKey: "referenceId",
         header: "REFERENCE ID",
@@ -400,17 +434,17 @@ export default function ServiceWiseReportPage() {
         header: "VIEW",
         center: true,
         cell: ({ row }) => (
-          <ActionButtons onView={() => navigate(`/transactions`, { state: { transactionId: row.original._id } })} />
+          <ActionButtons onView={() => navigate(`/reports/service-wise/details?service=${service}&pipeline=${pipeline}`, { state: { transactionId: row.original._id, apiKey: apiKey } })} />
         ),
       },
     ];
 
     return baseColumns;
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, service, pipeline]);
 
   return (
     <PageLayout
-      title={service ? `${serviceNames[service] || service.toUpperCase()} Report` : "Service Wise Report"}
+      title={service ? `${ServiceLabel(service) || service.toUpperCase()} Report` : "Service Wise Report"}
       subtitle={service ? `Viewing reports for technical services.` : "Detailed breakdown of transactions and earnings."}
       actions={service ? filterActions : null}
     >
@@ -439,31 +473,31 @@ export default function ServiceWiseReportPage() {
               <>
                 <StatCard
                   label="Total Success"
-                  count={statsData?.totalSuccess?.count}
-                  amount={formatToINR(statsData?.totalSuccess?.amount)}
+                  count={statsData?.totalSuccess?.count ?? "---"}
+                  amount={formatToINR(statsData?.totalSuccess?.amount) ?? "---"}
                   type="success"
                   icon={CheckCircle2}
                 />
                 <StatCard
                   label="Total Pending"
-                  count={statsData?.totalPending?.count}
-                  amount={formatToINR(statsData?.totalPending?.amount)}
+                  count={statsData?.totalPending?.count ?? "---"}
+                  amount={formatToINR(statsData?.totalPending?.amount) ?? "---"}
                   type="pending"
                   icon={Clock}
                 />
                 <StatCard
                   label="Total Failed"
-                  count={statsData?.totalFailed?.count}
-                  amount={formatToINR(statsData?.totalFailed?.amount)}
+                  count={statsData?.totalFailed?.count ?? "---"}
+                  amount={formatToINR(statsData?.totalFailed?.amount) ?? "---"}
                   type="failed"
                   icon={XCircle}
                 />
                 <StatCard
                   label="Commission Overview"
-                  count={statsData?.commissionOverview?.totalDays}
-                  amount={formatToINR(statsData?.commissionOverview?.totalCommission)}
+                  count={statsData?.commissionOverview?.count ?? "---"}
+                  amount={formatToINR(statsData?.commissionOverview?.totalCommission) ?? "---"}
                   type="commission"
-                  subLabel1="Total Days"
+                  subLabel1="Total Txn."
                   subLabel2="Total Commission"
                   icon={IndianRupee}
                 />

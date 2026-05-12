@@ -1,4 +1,4 @@
-
+"use client";
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -28,8 +28,8 @@ const fundRequestStats = {
   approved: { label: "Approved Fund Request", count: 0, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", icon: CheckCircle2 },
   pending: { label: "Pending Fund Request", count: 0, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100", icon: Clock },
   rejected: { label: "Reject Fund Request", count: 0, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", icon: XCircle },
-  approvedAmount: { label: "Total Approved", ruppee:true, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", icon: CheckCircle2 },
-  rejectedAmount: { label: "Total Rejected", ruppee:true, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", icon: XCircle },
+  approvedAmount: { label: "Total Approved", ruppee: true, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", icon: CheckCircle2 },
+  rejectedAmount: { label: "Total Rejected", ruppee: true, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", icon: XCircle },
 }
 
 
@@ -401,9 +401,7 @@ export default function FundRequestPage() {
               const isRuppee = fundRequestStats?.[key]?.ruppee || false;
 
               let displayCount = isRuppee ? formatToINR(stat.count) : stat.count || 0;
-              if (key.startsWith('sum')) {
-                displayCount = `₹${Number(stat.count || 0).toLocaleString('en-IN')}`;
-              }
+
 
               return (
                 <div
@@ -414,9 +412,15 @@ export default function FundRequestPage() {
                     <p className="text-slate-600 text-[10px] font-extrabold uppercase tracking-widest truncate">
                       {config?.label}
                     </p>
-                    <h3 className="text-2xl font-bold text-slate-900 tracking-tight truncate">
-                      {displayCount}
-                    </h3>
+                    <div className="relative group">
+                      <h3 className="text-2xl font-bold  tracking-tight truncate">
+                        {displayCount}
+                      </h3>
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-100 text-slate-900 text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                        {displayCount}
+                      </div>
+                    </div>
+
                   </div>
                   <div
                     className={cn(

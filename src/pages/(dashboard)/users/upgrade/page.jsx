@@ -15,6 +15,7 @@ import { handleValidationError } from "../../../../utils/helperFunction"
 
 export default function UpgradeUserPage() {
   const navigate = useNavigate()
+  const [users, setUsers] = useState([])
 
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedPackage, setSelectedPackage] = useState(null)
@@ -37,9 +38,12 @@ export default function UpgradeUserPage() {
 
   // Fetch users using useFetch
   const { data: usersData, isLoading: usersLoading } = useFetch(
-    apiEndpoints.fetchUsers,
+    apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
+        if (data.success) {
+          setUsers(data.data || [])
+        }
         console.log("Users fetched successfully:", data)
       },
       onError: (error) => {
@@ -68,12 +72,7 @@ export default function UpgradeUserPage() {
   const packages = packagesData?.data || []
 
   // Extract and map users array from response
-  const users = usersData?.data ? usersData.data.map(u => ({
-    ...u,
-    id: u._id,
-    name: u.name || `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username || "Unknown",
-    email: u.email || "N/A"
-  })) : []
+
 
   // Filter users based on search query
   const filteredUsers = searchQuery.trim()
@@ -142,8 +141,8 @@ export default function UpgradeUserPage() {
                   </div>
                 ) : filteredUsers.length > 0 ? (
                   filteredUsers.map(user => {
-                    const userId = user.id || user._id
-                    const isSelected = selectedUser && (selectedUser.id === userId || selectedUser._id === userId)
+                    const userId = user._id
+                    const isSelected = selectedUser && (selectedUser._id === userId)
 
                     return (
                       <div
@@ -153,10 +152,10 @@ export default function UpgradeUserPage() {
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
-                            {(user.name || "U").charAt(0).toUpperCase()}
+                            {(user.fullName || "U").charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className={`text-[13px] font-bold ${isSelected ? 'text-white' : 'text-slate-800'}`}>{user.name}</p>
+                            <p className={`text-[13px] font-bold ${isSelected ? 'text-white' : 'text-slate-800'}`}>{user.fullName}</p>
                             <p className={`text-[11px] font-medium ${isSelected ? 'text-slate-400' : 'text-slate-500'}`}>{user.email}</p>
                           </div>
                         </div>

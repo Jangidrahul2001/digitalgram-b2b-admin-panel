@@ -173,10 +173,38 @@ export const apiEndpoints = {
   allLedgerEntry: "/admin/walletLedger/all-ledger-entry-list",
   // serviceWiseReport:"/admin/report/service-wise-report"
 
+
+  // aeps1 report
+  aeps1Stats:"admin/aepsReport/aeps-stats",
+  aeps1Report:"/admin/aepsReport/complete-aeps-report",
+  aeps1ReportById:"/admin/aepsReport/report",
+
+  // aeps2 reports
+  aeps2Stats:"/admin/eAepsReport/aeps-stats",
+  aeps2Report:"admin/eAepsReport/complete-aeps-report",
+  aeps2ReportById:"/admin/eAepsReport/report",
+
   //recharge report
   rechargeStats: "/admin/rechargeReport/recharge-service-stats",
   rechargeReport: "/admin/rechargeReport/recharge-service-report",
   rechargeReportById: "/admin/rechargeReport/recharge-service-report",
+
+  //aeps payout 
+  aepsPayoutStats:"/admin/aepsPayoutReport/payout-stats",
+  aepsPayoutReport:"/admin/aepsPayoutReport/complete-payout-report",
+  aepsPayoutReportById:"/admin/aepsPayoutReport/report",
+
+  // xpress payout 
+  xpressPayoutStats:"/admin/xpressPayoutReport/payout-stats",
+  xpressPayoutReport:"/admin/xpressPayoutReport/complete-payout-report",
+  xpressPayoutReportById:"/admin/xpressPayoutReport/report",
+
+
+
+  // dmt reports
+  dmtStats:"/admin/dmtReport/dmt-stats",
+  dmtReport:"/admin/dmtReport/complete-dmt-report",
+  dmtReportById:"/admin/dmtReport/report",
 
   //bbps report
   bbpsStats: "/admin/bbpsReport/bbps-service-stats",
