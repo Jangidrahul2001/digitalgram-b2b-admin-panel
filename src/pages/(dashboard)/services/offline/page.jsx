@@ -46,9 +46,9 @@ export default function OfflineServicesPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setOfflineServiceList(data.data);
-          setTotalRecords(data.pagination.total || 0);
+        if (data?.success && data?.data) {
+          setOfflineServiceList(data?.data);
+          setTotalRecords(data?.pagination?.total || 0);
           setIsLoading(false);
         }
       },

@@ -42,10 +42,10 @@ export default function UsersPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
 
-          setUsers(data.data);
-          setTotalRecords(data.pagination.total || 0);
+          setUsers(data?.data);
+          setTotalRecords(data?.pagination?.total || 0);
           setIsLoading(false);
         }
       },

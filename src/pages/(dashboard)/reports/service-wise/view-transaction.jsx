@@ -158,9 +158,9 @@ export default function TransactionDetailPage() {
     `${apiEndpoints?.[apiKeys[service]]}/${transactionId}`,
     {
       onSuccess: (data) => {
-        if (data && data.success && data.data) {
+        if (data && data.success && data?.data) {
           const temp = data?.data
-          if (data && data.data && data.data.miniStatement && service === "aeps1") {
+          if (data && data?.data && data?.data.miniStatement && service === "aeps1") {
             const miniStatement = data?.data?.miniStatement?.map((transaction) => {
               const transactionType =
                 transaction?.narration

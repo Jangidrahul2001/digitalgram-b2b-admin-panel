@@ -37,8 +37,8 @@ export default function NewOfflineServicePage() {
     `${apiEndpoints.fetchOfflineServiceById}/${serviceId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const service = data.data;
+        if (data?.success && data?.data) {
+          const service = data?.data;
           setFormData({
             serviceName: service.serviceName || "",
             amount: service.amount || "",
@@ -64,8 +64,8 @@ export default function NewOfflineServicePage() {
     `${apiEndpoints.fetchFieldOptionsForOfflineService}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setFieldOptions([{ label: "Select All" }, ...data.data]);
+        if (data?.success && data?.data) {
+          setFieldOptions([{ label: "Select All" }, ...data?.data]);
         }
       },
       onError: (error) => {
@@ -81,8 +81,8 @@ export default function NewOfflineServicePage() {
     `${apiEndpoints.fetchDocumentOptionsForOfflineService}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setDocumentOptions([{ label: "Select All" }, ...data.data]);
+        if (data?.success && data?.data) {
+          setDocumentOptions([{ label: "Select All" }, ...data?.data]);
         }
       },
       onError: (error) => {

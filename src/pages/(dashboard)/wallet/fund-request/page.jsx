@@ -62,8 +62,8 @@ export default function FundRequestPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const userOptions = data.data.map(user => ({
+        if (data.success && data?.data) {
+          const userOptions = data?.data.map(user => ({
             label: `${user.fullName} (${user.userName})`,
             shortLabel: user.fullName,
             value: user._id
@@ -81,10 +81,9 @@ export default function FundRequestPage() {
     }`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          console.log("> fundRequestPage > fetchFundRequestList", data)
-          setFundRequest(data.data);
-          setTotalRecords(data.pagination.total);
+        if (data?.success && data?.data) {
+          setFundRequest(data?.data);
+          setTotalRecords(data?.pagination?.total);
         }
         setIsLoading(false);
       },

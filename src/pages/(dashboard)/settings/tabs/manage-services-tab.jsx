@@ -69,8 +69,8 @@ export function ManageServicesTab() {
     `${apiEndpoints.fetchServices}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((s) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((s) => ({
             label: s.label,
             value: s._id,
             ...s
@@ -91,8 +91,8 @@ export function ManageServicesTab() {
     `${apiEndpoints.fetchPipelineByServiceId}?serviceId=${selectedService}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data?.map((pipeline) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((pipeline) => ({
             label: pipeline.label,
             value: pipeline.code,
             ...pipeline,

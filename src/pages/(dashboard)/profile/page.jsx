@@ -181,12 +181,9 @@ export default function ProfilePage() {
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-5 mb-4">
                 <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 drop-shadow-sm flex flex-wrap items-center gap-4">
                   {profileData?.name || "Admin User"}
-                  <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[9px] uppercase tracking-[0.15em] border border-emerald-500/20 whitespace-nowrap">
-                    <ShieldCheck className="w-3 h-3 mr-1.5" /> Verified Admin
-                  </span>
                 </h1>
               </div>
-             
+
             </div>
           </div>
 

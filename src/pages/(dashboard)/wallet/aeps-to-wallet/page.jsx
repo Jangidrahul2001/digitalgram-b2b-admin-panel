@@ -17,6 +17,7 @@ import {
   handleValidationError,
 } from "../../../../utils/helperFunction";
 import { DateRangePicker } from "../../../../components/ui/date-range-picker";
+import ClickToCopy from "../../../../components/ui/ClickToCopy";
 
 export default function AepsToWalletPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,11 +41,11 @@ export default function AepsToWalletPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const userOptions = data.data.map(user => ({
-            label: `${user.fullName} (${user.userName})`,
-            shortLabel: user.fullName,
-            value: user._id
+        if (data?.success && data?.data) {
+          const userOptions = data?.data?.map(user => ({
+            label: `${user?.fullName} (${user?.userName})`,
+            shortLabel: user?.fullName,
+            value: user?._id
           }));
           setUsers(userOptions);
         }
@@ -59,8 +60,8 @@ export default function AepsToWalletPage() {
     }`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setData(data.data);
+        if (data.success && data?.data) {
+          setData(data?.data);
           setTotalRecords(data?.pagination?.total || 0);
           setIsLoading(false);
         }
@@ -116,12 +117,29 @@ export default function AepsToWalletPage() {
         header: "User Name",
         center: true,
         cell: ({ row }) => (
-          <div className="flex justify-center">
+          <div className="flex justify-center flex-col items-center">
             <span className="text-slate-900 font-semibold text-[13px]">
               {row.getValue("fullName")}
             </span>
+            <ClickToCopy text={row.original.userName}>
+              <span className="text-[11px] text-center text-slate-500 font-medium hover:text-slate-700 cursor-pointer transition-colors inline-block mt-0.5">
+                ( {row.original.userName} )
+              </span>
+            </ClickToCopy>
           </div>
         ),
+      },
+      {
+        header: "REF ID",
+        accessorKey: "referenceId",
+        center: true,
+        cell: ({ row }) => (
+          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+              {row.original.referenceId}
+            </span>
+          </ClickToCopy>
+        )
       },
       {
         accessorKey: "amount",

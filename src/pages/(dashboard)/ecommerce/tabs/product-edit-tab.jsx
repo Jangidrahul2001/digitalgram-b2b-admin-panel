@@ -37,9 +37,9 @@ export function ProductUpdateTab({
     `${apiEndpoints.fetchSingleProduct}/${productId}`,
     {
       onSuccess: (data) => {
-        console.log(data);
-        if (data.success) {
-          const product = data.data;
+        
+        if (data?.success && data?.data) {
+          const product = data?.data;
           setProductName(product.name || "");
           setStock(product.stock?.toString() || "");
           setPrice(product.price?.toString() || "");

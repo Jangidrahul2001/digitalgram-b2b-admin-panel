@@ -143,8 +143,8 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
     `${apiEndpoints?.fetchKycByUserId}/${params.userId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setUserKyc(data.data);
+        if (data?.success && data?.data) {
+          setUserKyc(data?.data);
           setShowKyc(true)
         }
         setIsLoading(false);
@@ -229,11 +229,11 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
 
   const { patch: updateUserKyc } = usePatch({
     onSuccess: (data) => {
-      if (data.success) {
+      if (data?.success && data?.data) {
         toast.success(data.message || "KYC Status updated successfully");
         refetchKycDetails();
         setUpdatingKycRequestStatus(false)
-        if (data.data.kycStatus === "rekyc") {
+        if (data?.data?.kycStatus === "rekyc") {
           navigate(-1)
         }
         else {

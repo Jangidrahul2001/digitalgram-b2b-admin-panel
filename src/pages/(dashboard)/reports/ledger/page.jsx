@@ -199,8 +199,8 @@ export default function LedgerReportPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const userOptions = data.data.map(user => ({
+        if (data?.success && data?.data) {
+          const userOptions = data?.data.map(user => ({
             label: `${user.fullName} (${user.userName})`,
             shortLabel: user.fullName,
             value: user._id
@@ -219,13 +219,13 @@ export default function LedgerReportPage() {
     }${selectedStatus ? `&status=${selectedStatus}` : ""}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setLedgerData(data.data.data || data.data || []);
-          setTotalRecords(data.data.totalRecords || data.pagination?.total || 0);
+        if (data?.success && data?.data) {
+          setLedgerData(data?.data?.data || data?.data || []);
+          setTotalRecords(data?.data?.totalRecords || data?.pagination?.total || 0);
 
           // Optionally update stats if available in response
-          if (data.data.stats) {
-            setStats(data.data.stats);
+          if (data?.data?.stats) {
+            setStats(data?.data?.stats);
           }
         }
         setIsLoading(false);
@@ -304,11 +304,11 @@ export default function LedgerReportPage() {
         accessorKey: "referenceId",
         center: true,
         cell: ({ row }) => (
-          <ClickToCopy text={row.original.referenceId}>
-            <span className="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-[11px] font-extrabold text-slate-900 tracking-tight whitespace-nowrap border border-slate-200">
-              {row.original.referenceId}
-            </span>
-          </ClickToCopy>
+        <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+          <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+            {row.original.referenceId}
+          </span>
+        </ClickToCopy>
         )
       },
       {
@@ -338,19 +338,19 @@ export default function LedgerReportPage() {
         header: "CHARGES",
         accessorKey: "charges",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-semibold text-slate-700">{formatToINR(row.original.charges)}</span>
+        cell: ({ row }) => <span className="text-[13px] font-semibold text-slate-700">{formatToINR(row.original.totalCharges)}</span>
       },
       {
         header: "GST",
         accessorKey: "gst",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.gst)}</span>
+        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.gstAmount)}</span>
       },
       {
         header: "TDS",
         accessorKey: "tds",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.tds)}</span>
+        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.tdsAmount)}</span>
       },
 
 
@@ -432,7 +432,7 @@ export default function LedgerReportPage() {
       <div className="flex flex-col gap-8">
         {/* Statistics Dashboard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2">
-          <StatCard
+          {/* <StatCard
             label="Total Success"
             count={stats.success.count}
             amount={stats.success.amount}
@@ -459,7 +459,7 @@ export default function LedgerReportPage() {
             amount={stats.refund.amount}
             type="refund"
             icon={RefreshCw}
-          />
+          /> */}
 
           <StatCard
             label="Total Commission"

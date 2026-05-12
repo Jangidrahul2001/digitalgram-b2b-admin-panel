@@ -218,7 +218,7 @@ export function DataTable({
           </Table>
         )}
       </div>
-      {!hidePagination && (
+      {!hidePagination &&  totalRecords !== 0 &&(
         <div className="flex items-center justify-between py-4 px-2">
           <Button
             variant="ghost"

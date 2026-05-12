@@ -84,10 +84,10 @@ export default function AddUserPage() {
     `${apiEndpoints.fetchPackages}/${formData.role}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const packagesData = (data.data || []).map((p) => ({
-            label: p.name || "Unknown",
-            value: p._id || null,
+        if (data?.success && data?.data) {
+          const packagesData = (data?.data || []).map((p) => ({
+            label: p?.name || "Unknown",
+            value: p?._id || null,
           }));
           setPackagesOptions(packagesData);
         }
@@ -110,10 +110,10 @@ export default function AddUserPage() {
     `${apiEndpoints.fetchRole}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const rolesData = (data.data || []).map((r) => ({
-            label: r.name || r.roleName || "Unknown",
-            value: r.id || r._id,
+        if (data?.success && data?.data) {
+          const rolesData = (data?.data || []).map((r) => ({
+            label: r?.name || r?.roleName || "Unknown",
+            value: r?.id || r?._id,
           }));
           setRolesOptions(rolesData);
         }

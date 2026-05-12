@@ -74,11 +74,11 @@ export default function PayoutBankRequestPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const userOptions = data.data.map(user => ({
-            label: `${user.fullName} (${user.userName})`,
-            shortLabel: user.fullName,
-            value: user._id
+        if (data?.success && data?.data) {
+          const userOptions = data?.data?.map(user => ({
+            label: `${user?.fullName} (${user?.userName})`,
+            shortLabel: user?.fullName,
+            value: user?._id
           }));
           setUsers(userOptions);
         }
@@ -134,9 +134,11 @@ export default function PayoutBankRequestPage() {
     }`,
     {
       onSuccess: (data) => {
-        setPayoutRequest(data.data);
-        setTotalRecords(data.pagination.total);
+        if (data?.success && data?.data) {
+        setPayoutRequest(data?.data);
+        setTotalRecords(data?.pagination?.totalRequests);
         setIsLoading(false);
+        }
       },
       onError: (error) => {
         console.error("Error fetching payout request", error);

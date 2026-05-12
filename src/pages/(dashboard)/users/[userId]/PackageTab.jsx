@@ -40,8 +40,8 @@ const PackageTab = ({ userId, user, fetchParticularUser }) => {
     `${apiEndpoints.fetchPackages}/${user?.roleId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const temp = data.data.map((pkg) => ({
+        if (data?.success && data?.data) {
+          const temp = data?.data?.map((pkg) => ({
             ...pkg,
             label: pkg.name,
             value: pkg._id,

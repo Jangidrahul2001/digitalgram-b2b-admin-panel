@@ -164,8 +164,8 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
     `${apiEndpoints.fetchWalletTransactions}/${userId}?page=${pageIndex}&limit=${pageSize}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          const mappedTransactions = data.data.map((transaction) => ({
+        if (data?.success && data?.data) {
+          const mappedTransactions = data?.data?.map((transaction) => ({
             ...transaction,
             id: transaction._id,
             formattedDate: new Date(transaction.createdAt).toLocaleDateString('en-IN'),

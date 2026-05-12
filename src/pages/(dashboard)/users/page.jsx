@@ -111,8 +111,8 @@ export default function UsersPage() {
     `${apiEndpoints.fetchUserStats}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setUserStats(data.data);
+        if (data?.success && data?.data) {
+          setUserStats(data?.data);
         }
         setIsStatsLoading(false);
       },
@@ -128,11 +128,10 @@ export default function UsersPage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
 
-          setUsers(data.data);
-          console.log(data.pagination.total)
-          setTotalRecords(data.pagination.total || 0);
+          setUsers(data?.data);
+          setTotalRecords(data?.pagination?.total || 0);
           setIsLoading(false);
         }
       },
@@ -147,13 +146,13 @@ export default function UsersPage() {
 
   const { patch: updateUserStatus } = usePatch({
     onSuccess: (data) => {
-      if (data.success) {
-        toast.success(data.message || "Status updated successfully");
+      if (data?.success && data?.data) {
+        toast.success(data?.message || "Status updated successfully");
 
         setUsers((prevUsers) => {
           const updatedUsers = prevUsers.map((user) =>
-            user.id === data.data._id
-              ? { ...user, status: data.data.isActive ? "active" : "inactive" }
+            user.id === data?.data._id
+              ? { ...user, status: data?.data.isActive ? "active" : "inactive" }
               : user,
           );
           return [...updatedUsers];

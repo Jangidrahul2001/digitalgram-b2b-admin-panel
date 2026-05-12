@@ -19,9 +19,9 @@ export default function EnquiriesPage() {
     `${apiEndpoints.fetchEnquires}?page=${pageIndex}&limit=${pageSize}${searchQuery ? `&search=${searchQuery}` : ""}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setEnquiries(data.data);
-          setTotalRecords(data.pagination.total);
+        if (data?.success && data?.data) {
+          setEnquiries(data?.data);
+          setTotalRecords(data?.pagination?.total);
         }
         setIsLoading(false);
       },

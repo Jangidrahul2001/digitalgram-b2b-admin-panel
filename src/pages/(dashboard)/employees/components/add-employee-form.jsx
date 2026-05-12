@@ -31,8 +31,8 @@ export function AddEmployeeForm({ onCancel }) {
     `${apiEndpoints.permissionList}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setModulePermission(data.data);
+        if (data?.success && data?.data) {
+          setModulePermission(data?.data);
         }
         setIsLoading(false);
       },

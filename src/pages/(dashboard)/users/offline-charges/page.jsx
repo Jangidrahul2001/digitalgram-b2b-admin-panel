@@ -167,11 +167,10 @@ export default function OfflineChargePage() {
     buildApiUrl(),
     {
       onSuccess: (data) => {
-        if (data.success) {
-          console.log(data)
-          const mappedRequests = data.data.map((request) => ({
+        if (data?.success && data?.data) {
+          const mappedRequests = data?.data?.map((request) => ({
             ...request,
-            id: request._id,
+            id: request?._id,
           }))
           setRequests(mappedRequests)
           setTotalRecords(data.pagination?.total || 0)
@@ -325,8 +324,10 @@ export default function OfflineChargePage() {
       header: "Transaction Id",
       headerClassName: "text-center",
       cell: ({ row }) => (
-        <ClickToCopy text={row.getValue("referenceId")} className={"px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-md text-[11px] font-bold cursor-pointer hover:bg-amber-100 transition-colors inline-block"}>
-          {row.getValue("referenceId")}
+        <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+          <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+            {row.original.referenceId}
+          </span>
         </ClickToCopy>
 
       )

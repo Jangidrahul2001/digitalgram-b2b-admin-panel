@@ -41,8 +41,8 @@ export default function UpgradeUserPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setUsers(data.data || [])
+        if (data?.success && data?.data) {
+          setUsers(data?.data || [])
         }
         console.log("Users fetched successfully:", data)
       },

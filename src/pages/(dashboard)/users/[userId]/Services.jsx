@@ -42,9 +42,8 @@ export default function ServicesTab({
     `${apiEndpoints?.fetchServicesWithPipeline}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          console.log(data.data, "servicesWithPipeline");
-          setServicesWithPipeline(data.data);
+        if (data?.success && data?.data) {
+          setServicesWithPipeline(data?.data);
         }
         setIsLoading(false);
       },

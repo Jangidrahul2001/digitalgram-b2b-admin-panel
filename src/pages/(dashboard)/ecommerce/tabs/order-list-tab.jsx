@@ -6,6 +6,7 @@ import { Eye, Edit } from "@/components/icons";
 import { useFetch } from "../../../../hooks/useFetch";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
 import { formatDate } from "../../../../utils/helperFunction";
+import { ActionButtons } from "../../../../components/ui/ActionButtons";
 
 export function OrderListTab({ handleTabChange, setSelectedOrderId }) {
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -20,9 +21,9 @@ export function OrderListTab({ handleTabChange, setSelectedOrderId }) {
     `${apiEndpoints.fetchOrders}?page=${pageIndex}&limit=${pageSize}&search=${searchQuery}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
-          setOrders(data.data || []);
-          setTotalRecords(data.pagination.total);
+        if (data?.success && data?.data) {
+          setOrders(data?.data || []);
+          setTotalRecords(data?.pagination?.total);
         }
         setIsLoading(false);
       },
@@ -154,17 +155,8 @@ export function OrderListTab({ handleTabChange, setSelectedOrderId }) {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.1, x: 2 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleViewOrder(row.original)}
-              className="h-8 px-2 flex items-center gap-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all text-[11px] font-bold uppercase border border-transparent hover:border-indigo-100"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              View
-            </motion.button>
-          </div>
+          <ActionButtons onView={()=>handleViewOrder(row.original)} viewTitle="View Order" />  
+         
         ),
       },
     ],

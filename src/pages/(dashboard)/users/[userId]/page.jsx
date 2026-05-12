@@ -33,7 +33,6 @@ import { KYCActionModal } from "../../../../components/modals/kyc-action-modal";
 import { ConfirmationModal } from "../../../../components/modals/confirmation-modal";
 import { Select } from "../../../../components/ui/select";
 import { toast } from "sonner";
-
 import { LoadingScreen } from "../../../../components/ui/loading-screen";
 
 // --- Components ---
@@ -100,9 +99,9 @@ export default function UserDetailsPage() {
     `${apiEndpoints?.fetchParticularUser}/${params.userId}`,
     {
       onSuccess: (data) => {
-        if (data.success) {
+        if (data?.success && data?.data) {
           const result = [];
-          data.data?.commission?.forEach((serviceItem) => {
+          data?.data?.commission?.forEach((serviceItem) => {
             const { serviceName, data } = serviceItem;
 
             data.forEach((categoryItem) => {
