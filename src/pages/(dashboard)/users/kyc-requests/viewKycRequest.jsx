@@ -33,6 +33,7 @@ import { capitalize, formatDate, handleValidationError } from "../../../../utils
 import { usePatch } from "../../../../hooks/usePatch";
 import { set } from "date-fns";
 import { Check } from "lucide-react";
+import ImageModal from "../../../../components/ui/ImageModal";
 
 // ... imports
 
@@ -40,7 +41,7 @@ export default function UserDetailsPage() {
   const params = useParams();
   const navigate = useNavigate();
 
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("kyc");
   const [user, setUser] = useState(null);
@@ -99,9 +100,17 @@ export default function UserDetailsPage() {
 }
 
 function KYCTab({ user, refetchKycDetails }) {
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [updatingSection, setUpdatingSection] = useState({ name: "", status: "" });
   const navigate = useNavigate();
+
+  const handleView = (url) => {
+    setSelectedImage(url)
+    setImageModalOpen(true)
+  }
 
   // Initialize section statuses based on user's current KYC status
   const [sectionStatus, setSectionStatus] = useState(() => {
@@ -435,7 +444,7 @@ function KYCTab({ user, refetchKycDetails }) {
                 Shop / Workplace Image
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <DocPreview label="Shop Front View" url={user?.shopImageUrl} />
+                <DocPreview label="Shop Front View" url={user?.shopImageUrl} onView={handleView} />
               </div>
             </div>
           </div>
@@ -471,9 +480,12 @@ function KYCTab({ user, refetchKycDetails }) {
               <InfoField label="Bank Name" value={user?.bankName} />
               <InfoField label="Account Number" value={user?.accountNumber} />
               <InfoField label="IFSC Code" value={user?.ifscCode} />
-              <DocPreview label="Blank Cheque" url={user?.blankChequeUrl} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-3">
+              <DocPreview label="Blank Cheque" url={user?.blankChequeUrl} onView={handleView} />
             </div>
           </div>
+
 
           {/* Identity Documents */}
           <div>
@@ -505,8 +517,8 @@ function KYCTab({ user, refetchKycDetails }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
               {/* <DocPreview label="Photo" url={user.}/> */}
-              <DocPreview label="Aadhaar" url={user?.aadharFileUrl} />
-              <DocPreview label="PAN" url={user?.panFileUrl} />
+              <DocPreview label="Aadhaar" url={user?.aadharFileUrl} onView={handleView} />
+              <DocPreview label="PAN" url={user?.panFileUrl} onView={handleView} />
             </div>
           </div>
         </CardContent>
@@ -545,6 +557,10 @@ function KYCTab({ user, refetchKycDetails }) {
         currentStatus={user.kycStatus}
         userName={`${user.firstName} ${user.lastName}`}
       />
+      <ImageModal isOpen={imageModalOpen} onClose={() => {
+        setImageModalOpen(false)
+        setSelectedImage(null)
+      }} images={selectedImage ? [selectedImage] : []} />
     </>
   );
 }
@@ -647,39 +663,35 @@ const InfoField = ({ label, value, fullWidth }) => (
   </div>
 );
 
-const DocPreview = ({ label, url }) => {
+const DocPreview = ({ label, url, onView }) => {
   const [hasError, setHasError] = useState(false);
   const fullUrl = `${import.meta.env.VITE_API_URL}${url}`;
   const isPdf = url?.toLowerCase().endsWith(".pdf");
 
   const handleView = () => {
     if (!url) return;
-    const filename = url.substring(url.lastIndexOf("/") + 1) || label;
-    const newWindow = window.open("", "_blank");
-    if (newWindow) {
-      newWindow.document.title = filename;
-      newWindow.document.body.style.margin = "0";
-      newWindow.document.body.style.height = "100vh";
 
-      if (isPdf) {
+    if (isPdf) {
+      const filename = url.substring(url.lastIndexOf("/") + 1) || label;
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        newWindow.document.title = filename;
+        newWindow.document.body.style.margin = "0";
+        newWindow.document.body.style.height = "100vh";
+
+
         const iframe = newWindow.document.createElement("iframe");
         iframe.src = fullUrl;
         iframe.style.width = "100%";
         iframe.style.height = "100%";
         iframe.style.border = "none";
         newWindow.document.body.appendChild(iframe);
-      } else {
-        newWindow.document.body.style.display = "flex";
-        newWindow.document.body.style.justifyContent = "center";
-        newWindow.document.body.style.alignItems = "center";
-        newWindow.document.body.style.backgroundColor = "#f0f0f0";
-        const img = newWindow.document.createElement("img");
-        img.src = fullUrl;
-        img.alt = label;
-        img.style.maxWidth = "100%";
-        img.style.maxHeight = "100%";
-        newWindow.document.body.appendChild(img);
+
       }
+
+    }
+    else {
+      onView(fullUrl);
     }
   };
   if (!url || hasError) {
