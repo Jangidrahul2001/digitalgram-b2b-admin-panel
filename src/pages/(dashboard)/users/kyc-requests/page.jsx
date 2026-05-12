@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
 import { useFetch } from "../../../../hooks/useFetch";
 import { Eye } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { PageLayout } from "../../../../components/layouts/page-layout";
 import { Select } from "../../../../components/ui/select";
 import {
@@ -14,8 +14,10 @@ import {
   handleValidationError,
 } from "../../../../utils/helperFunction";
 import { Button } from "../../../../components/ui/button";
+import { ActionButtons } from "../../../../components/ui/ActionButtons";
 
 export default function KycRequestsPage() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState(null);
   const [search, setSearch] = useState("");
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -163,18 +165,11 @@ export default function KycRequestsPage() {
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => (
-          <div className="flex items-center justify-center gap-3">
-            <Button
-              asChild
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 bg-slate-900 border border-slate-900 rounded-xl text-white hover:text-white hover:bg-slate-800 hover:border-slate-800 transition-all shadow-sm hover:shadow-md duration-150 hover:scale-102"
-            >
-              <Link to={`/kyc-requests/${row.original._id}`}>
-                <Eye className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+          <ActionButtons onView={() => {
+            navigate(`/kyc-requests/${row.original._id}`)
+          }}
+            viewTitle="View Kyc" />
+          
         ),
       },
     ],

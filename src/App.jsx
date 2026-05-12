@@ -138,8 +138,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <BrowserRouter basename="/admin">
-      {/* <BrowserRouter > */}
+      <BrowserRouter basename={import.meta.env.VITE_BASENAME}>
         <Routes>
           <Route element={<RootLayout />}>
             <Route
@@ -253,7 +252,7 @@ export default function App() {
               <Route path="/reports/ledger/details/:id" element={<LedgerDetailsPage />} />
               <Route path="/reports/service-wise" element={<ServiceWiseReportPage />} />
               <Route path="/reports/transactions" element={<TransactionSearchPage />} />
-              <Route path="/transactions" element={<TransactionDetailPage />} />
+              <Route path="/reports/service-wise/details" element={<TransactionDetailPage />} />
               <Route path="/reports/commission-wise" element={<CommissionWiseReportPage />} />
             </Route>
           </Route>

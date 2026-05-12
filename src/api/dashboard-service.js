@@ -1,5 +1,5 @@
 
-import { apiClient, ENDPOINTS } from "../lib/api-config";
+
 import { Activity, Wallet, Users, Send, FileText } from "@/components/icons";
 
 // --- Mock Data ---
@@ -29,7 +29,7 @@ export const fetchDashboardWalletBalances = async () => {
             resolve(MOCK_WALLET_BALANCES);
         }, 500);
     });
-    // return apiClient(ENDPOINTS.DASHBOARD_WALLET);
+    
 };
 
 /**
@@ -83,7 +83,7 @@ export const fetchLatestTransactions = async (filters = {}) => {
             resolve(data);
         }, 700);
     });
-    // return apiClient(ENDPOINTS.DASHBOARD_TRANSACTIONS, { params: filters });
+    
 };
 
 /**
@@ -96,7 +96,7 @@ export const fetchBusinessVolume = async () => {
             resolve(MOCK_BUSINESS_VOLUME);
         }, 400);
     });
-    // return apiClient(ENDPOINTS.DASHBOARD_STATS);
+    
 };
 
 /**
@@ -109,7 +109,7 @@ export const fetchTransactionStatusData = async () => {
             resolve(MOCK_SUCCESS_FAILED_DATA);
         }, 600);
     });
-    // return apiClient(ENDPOINTS.DASHBOARD_CHART_STATUS);
+    
 };
 
 /**
@@ -143,7 +143,7 @@ export const fetchChannelStatsData = async () => {
             resolve(MOCK_CHANNEL_DATA);
         }, 600);
     });
-    // return apiClient(ENDPOINTS.DASHBOARD_CHART_CHANNEL);
+  
 };
 
 /**

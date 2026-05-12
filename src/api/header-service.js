@@ -33,8 +33,7 @@ export const fetchWalletBalance = async () => {
         }, 500);
     });
 
-    // Real API implementation (Uncomment when ready)
-    // return apiClient(ENDPOINTS.WALLET_BALANCE);
+    
 };
 
 /**
@@ -49,8 +48,7 @@ export const fetchNotifications = async () => {
         }, 600);
     });
 
-    // Real API implementation (Uncomment when ready)
-    // return apiClient(ENDPOINTS.NOTIFICATIONS);
+   
 };
 
 /**
@@ -65,6 +63,5 @@ export const fetchNewsTicker = async () => {
         }, 400);
     });
 
-    // Real API implementation (Uncomment when ready)
-    // return apiClient(ENDPOINTS.NEWS_TICKER);
+    
 };
