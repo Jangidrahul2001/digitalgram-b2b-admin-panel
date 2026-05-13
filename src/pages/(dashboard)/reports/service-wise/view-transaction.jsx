@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "../../../../lib/utils";
 import {
   CheckCircle2,
   XCircle,
@@ -39,7 +41,8 @@ import {
   Phone,
   Mail,
   Hash,
-  PhoneCall
+  PhoneCall,
+  Terminal
 } from "lucide-react";
 import { useFetch } from "../../../../hooks/useFetch";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
@@ -48,8 +51,63 @@ import { Skeleton } from "../../../../components/ui/skeleton";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
 import { formatDate, formatToINR, handleValidationError } from "../../../../utils/helperFunction";
-import { AnimatePresence } from "framer-motion";
-import { cn } from "../../../../lib/utils";
+import { DataTable } from "../../../../components/tables/data-table";
+
+const TXN_DATA = {
+  id: "8",
+  amount: 948.00,
+  status: "FAILED",
+  txnType: "REFUND",
+  serviceCategory: "UTILITY BILLS",
+  date: "2026-03-10 10:05:57",
+  details: {
+    user: "camlenio software (ID: )",
+    txnType: "REFUND",
+    service: "BBPS_JVVNL0000RAJ01",
+    amount: 948.00,
+    openingBalance: 2109.61,
+    closingBalance: 3057.61,
+    commission: 0.25,
+    charges: 0.00,
+    gst: 0.00,
+    tds: 0.00,
+    netAmount: 0.00,
+    referenceId: "FUTS98DRD351O27C7Z570XM14V482611025",
+    clientRefId: "N/A",
+    utrNumber: "N/A",
+    refund: "YES",
+    remark: "BBPS Failed Refund",
+    message: "Failed"
+  },
+  bbpsDetails: {
+    txnRef: "REF-008123",
+    requestId: "FUTS98DRD351O27C7Z570XM14V482611025",
+    billerId: "JVVNL0000RAJ01",
+    billAmount: 948.00,
+    finalAmount: 0.00,
+    status: "FAILED",
+    error: "Provider Timeout"
+  },
+  flow: [
+    { label: "Request Processed", status: "success", time: "10:05:50 AM" },
+    { label: "Wallet Debited", status: "success", time: "10:05:52 AM" },
+    { label: "Provider Timeout", status: "error", time: "10:05:57 AM" },
+    { label: "Auto Refund Done", status: "success", time: "10:05:59 AM" }
+  ],
+  apiRequest: {
+    plainText: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<billPaymentRequest>\r\n  <agentId>CC01RP68AGTBAA004669</agentId>\r\n  <billerAdhoc>true</billerAdhoc>\r\n  <agentDeviceInfo>\r\n  <requestId>FUTS98DRD351O27C7Z570XM14V482611025</requestId>\r\n</billPaymentRequest>",
+    requestId: "FUTS98DRD351O27C7Z570XM14V482611025"
+  },
+  apiResponse: {
+    responsecode: "204",
+    errorInfo: {
+      error: {
+        errorcode: "E210",
+        errormessage: "No fetch data found for given ref id."
+      }
+    }
+  }
+}
 
 
 // --- Skeleton Components ---
@@ -580,8 +638,65 @@ export default function TransactionDetailPage() {
                 </>
 
               }
+
+
             </div>
           </Card>
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="space-y-4 mt-4">
+            {/* Request Terminal */}
+            <div className="bg-slate-50 rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100 group">
+              <div className="px-7 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1.5 pr-2">
+                    <div className="h-2 w-2 rounded-full bg-slate-200" />
+                    <div className="h-2 w-2 rounded-full bg-slate-200" />
+                    <div className="h-2 w-2 rounded-full bg-slate-200" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 ml-2 flex items-center gap-2">
+                    <Globe size={12} className="animate-pulse" /> Diagnostic Request
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(TXN_DATA.apiRequest.plainText)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
+                    <Copy size={11} /> Copy Payload
+                  </motion.button>
+                </div>
+              </div>
+              <div className="p-7 relative">
+                <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-700"><Terminal size={80} className="text-indigo-600" /></div>
+                <pre className="text-[12px] font-mono text-slate-600 overflow-auto custom-scrollbar leading-relaxed selection:bg-indigo-100 max-h-48">
+                  <code className="block py-2">{TXN_DATA.apiRequest.plainText}</code>
+                </pre>
+              </div>
+            </div>
+
+            {/* Response Terminal */}
+            <div className="bg-slate-50 rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100 relative group">
+              <div className="px-7 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1.5 pr-2">
+                    <div className="h-2 w-2 rounded-full bg-slate-200" />
+                    <div className="h-2 w-2 rounded-full bg-slate-200" />
+                    <div className="h-2 w-2 rounded-full bg-slate-200" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-rose-600 ml-2 flex items-center gap-2">
+                    <Activity size={12} /> Server Response
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(JSON.stringify(TXN_DATA.apiResponse, null, 2))} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
+                    <Copy size={11} /> Copy JSON
+                  </motion.button>
+                </div>
+              </div>
+
+              <div className="p-7">
+                <pre className="text-[12px] font-mono text-slate-600 overflow-auto custom-scrollbar leading-relaxed selection:bg-rose-100 max-h-48">
+                  <code className="block py-2">{JSON.stringify(TXN_DATA.apiResponse, null, 2)}</code>
+                </pre>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* --- SYSTEM FOOTER --- */}

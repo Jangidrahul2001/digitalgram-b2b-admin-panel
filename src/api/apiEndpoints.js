@@ -171,11 +171,16 @@ export const apiEndpoints = {
 
   //wallet ledger
   allLedgerEntry: "/admin/walletLedger/all-ledger-entry-list",
-  // serviceWiseReport:"/admin/report/service-wise-report"
+  // serviceWiseReport:"/admin/report/service-wise-report",
 
+// trancaction Search page 
+  transactionSearch:"/admin/search/transaction-search",
+
+  // commision Reports
+  commissionWiseReport:"/admin/commissionReport/reports",
 
   // aeps1 report
-  aeps1Stats:"admin/aepsReport/aeps-stats",
+  aeps1Stats:"/admin/aepsReport/aeps-stats",
   aeps1Report:"/admin/aepsReport/complete-aeps-report",
   aeps1ReportById:"/admin/aepsReport/report",
 
