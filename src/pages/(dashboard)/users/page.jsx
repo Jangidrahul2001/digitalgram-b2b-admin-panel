@@ -24,7 +24,7 @@ const StatusToggle = ({ row, updateUserStatus }) => {
   const id = row.original._id;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOptimisticActive, setIsOptimisticActive] = useState(row.original.isActive);
-  console.log("isOptimisticActive", isOptimisticActive)
+ 
 
   // Sync with prop if it changes from outside (e.g., API response or external refresh)
   useEffect(() => {

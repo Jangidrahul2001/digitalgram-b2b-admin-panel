@@ -21,6 +21,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+
 api.interceptors.response.use(
   (response) => response.data,
 
@@ -43,8 +44,8 @@ api.interceptors.response.use(
       localStorage.removeItem("isAuthenticated");
       sessionStorage.removeItem("temp_auth_data");
 
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (window.location.pathname !== `/login`) {
+        window.location.href = `/login`;
       }
 
       return Promise.reject({

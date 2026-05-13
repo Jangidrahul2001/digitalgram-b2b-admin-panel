@@ -1,364 +1,352 @@
-"use client";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
+import { format, set } from "date-fns";
 import {
-  Filter,
-  Eye,
-  Calendar as CalendarIcon,
-  ShieldCheck,
+  Search,
+  RotateCcw,
   History,
-  Search as SearchIcon
-} from "@/components/icons";
-import { format } from "date-fns";
-import {
-  Card,
-  CardContent,
-} from "../../../../components/ui/card";
-import {
-  formatDate,
-  formatToINR,
-  InputSlice,
-} from "../../../../utils/helperFunction";
-import { useNavigate } from "react-router-dom";
-import { cn } from "../../../../lib/utils";
-import { RefreshCw, Zap } from "lucide-react";
+  Activity,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Smartphone,
+  ChevronDown,
+  Calendar as CalendarIcon,
+  X,
+  CreditCard,
+  Zap,
+  Phone,
+  ArrowRightLeft,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  User,
+  Hash,
+  AlertCircle,
+  Eye,
+  MoreVertical,
+  Calendar,
+} from "lucide-react";
+
+import { toast } from "sonner";
 import { useFetch } from "../../../../hooks/useFetch";
-import { Input } from "../../../../components/ui/input";
-import { Select } from "../../../../components/ui/select";
-import { Button } from "../../../../components/ui/button";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
-import React, { useState, useCallback, useMemo } from "react";
-import { DataTable } from "../../../../components/tables/data-table";
 import { PageLayout } from "../../../../components/layouts/page-layout";
-import { DateRangePicker } from "../../../../components/ui/date-range-picker";
-import ClickToCopy from "../../../../components/ui/ClickToCopy";
-import { ActionButtons } from "../../../../components/ui/ActionButtons";
+import { Button } from "../../../../components/ui/button";
+import { formatDate, formatToINR, InputSlice } from "../../../../utils/helperFunction";
+import { cn } from "../../../../lib/utils";
 
-export default function TransactionSearchPage() {
-  const [reportData, setReportData] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [internalLoading, setInternalLoading] = useState(false);
+
+
+export default function AllTransactions() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
+  const [transactions, setTransactions] = useState([])
+
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
-  const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const searchInputRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const calendarRef = useRef(null);
 
-  // Filter states
-  const [selectedUser, setSelectedUser] = useState("");
-  const [date, setDate] = useState({
-    from: null,
-    to: null,
-  });
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const [useList, setUserList] = useState([]);
+  // Keyboard shortcut to focus search
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
-  // Fetch users for dropdown
-  const { data: usersData } = useFetch(
-    apiEndpoints.fetchAllUserWithoutPagination,
+
+  const { refetch: fetchTransactions } = useFetch(
+    `${apiEndpoints.transactionSearch}?referenceId=${searchTerm}`,
     {
       onSuccess: (data) => {
-        if (data?.success && data?.data) {
-          const options = [{ label: "All Users", value: "all" }];
-          const users = data?.data?.map((user) => ({
-            label: `${user?.fullName || "User"} (${user.userName || "userId"})`,
-            value: user._id,
-          }));
-          options.push(...users);
-          setUserList(options);
+        if (data.success) {
+          console.log(data);
+          setTransactions(data.data || []);
+          setIsLoading(false)
         }
+      },
+      onError: (error) => {
+        setIsLoading(false)
+        console.log("error in transaction fetch data", error);
+        toast.error(handleValidationError(error) || "Something went wrong");
       },
     },
-    true,
-    false
+    false,
   );
 
-  // Build query parameters
-  const buildQueryParams = useCallback(() => {
-    const params = {
-      page: currentPage,
-      limit: pageSize,
-    };
-
-    if (date?.from) params.from = format(date.from, "yyyy-MM-dd");
-    if (date?.to) params.to = format(date.to, "yyyy-MM-dd");
-    if (selectedUser && selectedUser !== "all") params.userId = selectedUser;
-    if (search) params.search = search;
-
-    return params;
-  }, [currentPage, pageSize, date, selectedUser, search]);
 
 
-
-
-
-
-
-  const handleSearch = () => {
-    setCurrentPage(1);
-    const params = buildQueryParams();
-    refetch(params);
-  };
 
   const handleReset = () => {
-    setSearch("");
-    setDate({ from: null, to: null });
-    setSelectedUser("");
-    setCurrentPage(1);
+    setSearchTerm("")
+    setTransactions([])
+
   };
 
-  const handlePaginationChange = ({ pageIndex }) => {
-    setCurrentPage(pageIndex);
+  const handleSearch = () => {
+    setIsLoading(true)
+    fetchTransactions()
+
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
 
-  const columns = useMemo(
-    () => [
-      {
-        id: "srNo",
-        header: "SR NO.",
-        center: true,
-        cell: ({ index }) => (
-          <span className="font-semibold text-[13px] text-slate-500">
-            {(currentPage - 1) * pageSize + index + 1}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "createdAt",
-        header: "DATE & TIME",
-        center: true,
-        cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="text-slate-900 font-bold tracking-tight text-[12px]">
-              {formatDate(row.getValue("createdAt")).split(" ")[0]}
-            </span>
-            <span className="text-slate-400 text-[10px] uppercase font-black tracking-widest leading-none mt-1">
-              {formatDate(row.getValue("createdAt")).split(" ")[1]}
-            </span>
+
+  // Detailed Transaction Card Component
+  const TransactionCard = ({ txn, index }) => {
+    const status = txn.status?.toLowerCase() || "pending";
+    const config = {
+      success: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/50", dot: "bg-emerald-500", label: "SUCCESS" },
+      failed: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/50", dot: "bg-rose-500", label: "FAILED" },
+      pending: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/50", dot: "bg-amber-500", label: "PENDING" },
+    }[status] || { bg: "bg-slate-50", text: "text-slate-700", border: "border-slate-200/50", dot: "bg-slate-500", label: "ENTRY" };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          duration: 0.6,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        className="relative bg-white rounded-[2rem] border border-slate-200 p-7 mb-6 shadow-sm transition-all duration-500"
+      >
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+          <div className="flex-1 space-y-5">
+            {/* Top row: Status & ID */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className={cn(
+                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all",
+                config.bg, config.text, config.border
+              )}>
+                {config.label}
+              </span>
+              <span className="px-3.5 py-1.5 rounded-full bg-slate-50 text-[10px] font-black text-slate-500 border border-slate-200 font-mono tracking-widest">
+                ID: {txn.referenceId || ""}
+              </span>
+              <span className="px-3.5 py-1.5 rounded-full bg-slate-50 text-[10px] font-black text-slate-600 border border-slate-100/50 flex items-center gap-2 uppercase tracking-widest">
+                <Calendar size={12} className="text-slate-300" />
+                {formatDate(txn.createdAt)}
+              </span>
+            </div>
+
+            {/* Middle row: Service Info */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <div className="px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                Service: <span className="text-slate-900">{txn.serviceType || ""}</span>
+              </div>
+              {txn.category &&
+                <div className="px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Category: <span className="text-slate-700">{txn.category || ""}</span>
+                </div>
+              }
+            </div>
           </div>
-        ),
-      },
-      {
-        accessorKey: "userName",
-        header: "NAME & USER ID",
-        center: true,
-        cell: ({ row }) => {
-          const fullName = row.original.fullName || "User Name";
-          const userName = row.getValue("userName");
-          return (
-            <div className="flex flex-col justify-center items-center min-w-0">
-              <span
-                className="text-slate-900 font-bold text-[13px] capitalize truncate max-w-[150px]"
-                title={fullName}
-              >
-                {fullName}
-              </span>
-              <ClickToCopy text={userName}>
-                <span
-                  className="text-slate-400 text-[11px] font-black lowercase mt-1 flex items-center cursor-pointer hover:text-slate-600 transition-colors">
-                  ({userName})
+
+          {/* Right Section: Status & Amount */}
+          <div className="flex flex-col items-end gap-1.5 md:min-w-[140px]">
+            <div className="px-4 py-1.5 rounded-full border border-slate-100/80 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2.5 bg-slate-50/20">
+              <span className={cn("w-1.5 h-1.5 rounded-full shadow-sm", config.dot)} />
+              {status}
+            </div>
+            <h3 className="text-[28px] font-black text-slate-900 tracking-tight leading-none mt-2 tabular-nums">
+              {formatToINR(txn.amount || 0)}
+            </h3>
+          </div>
+        </div>
+
+        {/* Info Grid Section */}
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">
+          {/* Merchant Details */}
+          <div className="bg-gradient-to-br from-indigo-50/80 to-white border border-indigo-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-indigo-100/20">
+            <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(79,70,229,0.3)]" />
+              Merchant Details
+            </h4>
+            <div className="space-y-3">
+              <p className="text-[12px] font-bold text-slate-900 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight">Name</span>
+                <span>{txn.fullName || "--"}</span>
+              </p>
+              <p className="text-[12px] font-bold text-slate-900 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight">User Name</span>
+                <span>{txn.userName || "--"}</span>
+              </p>
+              <p className="text-[12px] font-bold text-slate-900 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight">Mobile</span>
+                <span>{txn.phone || "--"}</span>
+              </p>
+              {/* <p className="text-[12px] font-bold text-slate-900 flex items-center justify-between gap-4">
+                <span className="text-slate-400 font-medium tracking-tight">Email</span>
+                <span className="truncate max-w-[150px] text-right text-indigo-900" title={txn.email || "--"}>
+                  {txn.email || "--"}
                 </span>
-              </ClickToCopy>
+              </p> */}
             </div>
-          );
-        },
-      },
-      {
-        accessorKey: "referenceId",
-        header: "REFERENCE ID",
-        center: true,
-        cell: ({ row }) => (
-          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
-            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
-              {row.original.referenceId}
-            </span>
-          </ClickToCopy>
-        )
-      },
-      {
-        accessorKey: "description",
-        header: "TRANSACTION TYPE",
-        center: true,
-        cell: ({ row }) => {
-          const description = row.getValue("description") || "General Adjustment";
-          return (
-            <div className="flex flex-col items-center justify-center gap-1 min-w-0">
-              <span
-                className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest border border-slate-200/50 "
-                title={description}
-              >
-                {description}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "amount",
-        header: "AMOUNT",
-        center: true,
-        cell: ({ row }) => {
-          const amount = row.original.amount || (Math.abs(row.original.closingBalance - row.original.openingBalance));
-          const isCredit = row.original.closingBalance > row.original.openingBalance;
-          const formattedAmount = `${isCredit ? "+" : ""}${formatToINR(amount)}`;
-          return (
-            <div className="flex flex-col items-center justify-center min-w-0">
-              <span
-                className={cn(
-                  "text-[14px] font-black tabular-nums tracking-tighter truncate max-w-[120px]",
-                  isCredit ? "text-emerald-600" : "text-slate-900"
-                )}
-                title={formattedAmount}
-              >
-                {formattedAmount}
-              </span>
-            </div>
-          );
-        }
-      },
-      {
-        accessorKey: "closingBalance",
-        header: "FINAL BALANCE",
-        center: true,
-        cell: ({ row }) => {
-          const val = formatToINR(row.getValue("closingBalance"));
-          return (
-            <span
-              className="text-slate-900 font-bold text-[13px] tabular-nums truncate max-w-[120px] block"
-              title={val}
-            >
-              {val}
-            </span>
-          );
-        },
-      },
-      {
-        id: "view",
-        header: "AUDIT",
-        center: true,
-        cell: ({ row }) => (
-          <ActionButtons onView={() => navigate(`/transactions`, { state: { transactionId: row.original._id } })} />
-        ),
-      },
-    ],
-    [currentPage, pageSize, navigate]
-  );
+          </div>
 
-  const filterActions = (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="w-[180px]">
-        <Select
-          placeholder="Users"
-          options={useList}
-          value={selectedUser}
-          onChange={setSelectedUser}
-          className="h-10 border-slate-200 rounded-xl text-sm font-semibold"
-        />
-      </div>
+          {/* Account */}
+          <div className="bg-gradient-to-br from-emerald-50/80 to-white border border-emerald-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-emerald-100/20">
+            <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
+              Account
+            </h4>
+            <div className="h-[60px] flex flex-col justify-center">
+              <p className="text-[15px] font-black text-slate-900 tracking-wider font-mono">{txn.account || "---"}</p>
+              <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Beneficiary Node</p>
+            </div>
+          </div>
 
-      <DateRangePicker
-        date={date}
-        setDate={setDate}
-        onApply={handleSearch}
-        onReset={handleReset}
-        triggerClassName="h-9 md:h-10 min-w-[150px] border-slate-200 rounded-xl shadow-xs text-slate-600 font-medium"
-        align="right"
-      />
-    </div>
-  );
+          {/* Bank UTR */}
+          <div className="bg-gradient-to-br from-sky-50/80 to-white border border-sky-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-sky-100/20">
+            <h4 className="text-[10px] font-black text-sky-600 uppercase tracking-[0.2em] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
+              Bank UTR
+            </h4>
+            <div className="h-[60px] flex flex-col justify-center">
+              <p className="text-[15px] font-black text-slate-900 tracking-wider font-mono">{txn.utr || txn.bankUtr || "---"}</p>
+              <p className="text-[9px] font-bold text-sky-500 uppercase tracking-widest mt-1">Network Ref</p>
+            </div>
+          </div>
+
+          {/* Remark */}
+          <div className="bg-gradient-to-br from-amber-50/80 to-white border border-amber-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-amber-100/20">
+            <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]" />
+              Remark
+            </h4>
+            <div className="h-[60px] flex flex-col justify-center">
+              <p className={cn(
+                "text-[12px] font-bold leading-relaxed",
+                txn.error ? "text-rose-600 font-black" : "text-amber-700"
+              )}>
+                {txn.description || "Process completed successfully."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <PageLayout
-      title="Transaction Search"
-      subtitle="Comprehensive audit and global transaction explorer"
-      showBackButton={false}
-      actions={filterActions}
+      title="Smart Transaction Search"
+      subtitle="Search a single transaction from your user panel."
+      className="max-w-[1600px] mx-auto py-4"
     >
-      <div className="flex flex-col gap-6 font-sans pb-10">
+      <div className="flex flex-col gap-6">
 
-        {/* Minimal Search Hub with Title and Zap Icon */}
-        <Card className="border border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.02)] bg-white rounded-2xl relative overflow-hidden group">
-          {/* Decorative Zap Icon */}
-          <div className="absolute top-6 right-6 hidden sm:flex items-center justify-center h-10 w-10 rounded-full bg-slate-50 border border-slate-100/50 text-slate-500 shadow-sm transition-all duration-300 hover:scale-110">
-            <Zap className="w-5 h-5 fill-slate-500/20" />
+        {/* --- Top Master Search Section: Minimalist Downsized --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm relative overflow-hidden"
+        >
+          {/* Decorative Corner Element */}
+          <div className="absolute top-6 right-8 flex">
+            <div className="w-10 h-10 rounded-full bg-indigo-50/60 border border-indigo-100 flex items-center justify-center shadow-sm relative group cursor-default">
+              <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-xl group-hover:blur-2xl transition-all" />
+              <Zap size={18} fill="currentColor" className="opacity-80 text-slate-600" />
+            </div>
           </div>
 
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-1 mb-6">
-              <h2 className="text-lg font-black text-slate-900 tracking-tighter uppercase leading-none">Find Transactions</h2>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Search Anything</p>
+          <div className="relative z-10 flex flex-col gap-5">
+            {/* Header: Title and Sub-label */}
+            <div className="flex flex-col gap-1">
+              <h2 className="text-xl font-black text-slate-900 tracking-tight leading-none uppercase">
+                Find Transactions
+              </h2>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                SEARCH ANYTHING
+              </p>
             </div>
 
-            <div className="flex flex-col lg:flex-row items-center gap-4">
-              <div className="relative flex-1 w-full flex items-center gap-3">
-                <div className="relative flex-1 group/input">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#2f35cd] transition-colors">
-                    <SearchIcon className="w-4 h-4" />
+            {/* Input Row: Label + Input + Actions */}
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 opacity-60">
+                SEARCH
+              </label>
+
+              <div className="flex flex-col lg:flex-row items-stretch gap-3">
+                <div className="relative group flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
+                    <Search size={16} className="text-slate-300 group-focus-within:text-slate-600 transition-all duration-300" />
                   </div>
-                  <Input
-                    placeholder="Search Reference, Mobile or UTR..."
-                    value={search}
-                    onChange={(e) => setSearch(InputSlice(e.target.value, 100))}
-                    onKeyDown={handleKeyDown}
-                    className="h-11 pl-11 pr-14 bg-slate-50/50 border-slate-200/60 rounded-xl text-[13px] font-semibold focus:bg-white focus:ring-4 focus:ring-indigo-500/5 transition-all"
+                  <input
+                    icon={Search}
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Reference ID, Mobile Number or Bank UTR..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(InputSlice(e.target.value, 50))}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    className="w-full h-11 bg-white border border-slate-200 rounded-2xl pl-12 pr-24 text-[13px] font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-600/5 focus:border-slate-600/20 transition-all shadow-sm"
                   />
+
+
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleSearch}
+
+                    className="h-11 px-8 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 shadow-lg shadow-gray-600/20 active:scale-95 transition-all flex items-center gap-3 rounded-2xl border-none min-w-[140px]"
+                  >
+                    <Search size={14} className="stroke-[3px]" />
+                    SEARCH
+                  </Button>
+                  <Button
+                    onClick={handleReset}
+                    className="h-11 px-6 bg-white border border-slate-200 text-slate-500 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all flex items-center gap-2.5 rounded-2xl group min-w-[120px]"
+                  >
+                    <RotateCcw size={14} className="stroke-[3px] group-hover:rotate-[-90deg] transition-transform duration-500" />
+                    RESET
+                  </Button>
+
                 </div>
               </div>
-
-              <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
-                <Button
-                  onClick={handleSearch}
-                  className="flex-1 lg:flex-none h-11 px-8 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/10 active:scale-95 transition-all flex items-center gap-2"
-                >
-                  <SearchIcon className="w-3.5 h-3.5" />
-                  Search
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleReset}
-                  className="flex-1 lg:flex-none h-11 px-6 border-slate-200 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all flex items-center gap-2"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Reset
-                </Button>
-              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
-        {/* Master Output Table */}
-        <div className="p-0">
-          <DataTable
-            columns={columns}
-            data={reportData}
-            isLoading={internalLoading}
-            totalRecords={totalRecords}
-            pageSize={pageSize}
-            onPaginationChange={handlePaginationChange}
-            onSearch={setSearch}
-            searchValue={search}
-            exportData={reportData}
-            fileName="Global_Audit_Log"
-            loadingMessage="Establishing link to master ledger..."
-            columnVisibility={columnVisibility}
-            setColumnVisibility={setColumnVisibility}
-          />
+        {/* --- Results Section --- */}
+        <div className="flex flex-col gap-4">
+
+
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+                <div className="w-12 h-12 rounded-full border-4 border-slate-100 border-t-slate-600 animate-spin mb-4" />
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Synchronizing Data...</p>
+              </div>
+            ) : transactions.length > 0 ? (
+              transactions.map((txn, idx) => (
+                <TransactionCard key={txn.id || idx} txn={txn} index={idx} />
+              ))
+            ) : (
+              <div className="space-y-6">
+                <div className="flex flex-col items-center justify-center py-10 opacity-40">
+                  <h4 className="text-[13px] font-bold text-slate-900 mt-4">Search results will appear here</h4>
+                  <p className="text-[10px] font-medium text-slate-400 max-w-[240px] text-center mt-1">Use the search bar above to find specific transactions by ID or Mobile number.</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Informational Footer */}
-        <div className="flex flex-col items-center gap-4 py-12 opacity-30 select-none">
-          <div className="h-px w-12 bg-slate-300" />
-          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-2">
-            <ShieldCheck className="w-3 h-3" />
-            Production Audit Trace Validated
-          </p>
-        </div>
-
       </div>
     </PageLayout>
   );
