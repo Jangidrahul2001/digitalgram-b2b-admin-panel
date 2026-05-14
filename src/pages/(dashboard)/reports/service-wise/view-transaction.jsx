@@ -189,6 +189,38 @@ const MetricCard = ({ label, value, subLabel, icon: Icon, variant = "blue" }) =>
 
 // --- Page Main ---
 
+const objectToXML = (obj, rootName = "root") => {
+  const buildXML = (data) => {
+    // Array
+    if (Array.isArray(data)) {
+      return data
+        .map((item) => `<item>${buildXML(item)}</item>\n`)
+        .join("\n");
+    }
+
+    // Object
+    if (typeof data === "object" && data !== null) {
+      return Object.entries(data)
+        .map(([key, value]) => {
+          if (key === "billamount" && value) {
+            value = value / 100;
+          }
+          return `<${key}>${buildXML(value)}</${key}>`;
+        })
+        .join("\n");
+    }
+
+    // Primitive values
+    return data ?? "\n";
+  };
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<${rootName}>
+${buildXML(obj)}
+</${rootName}>`;
+};
+
+
 export default function TransactionDetailPage() {
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -199,6 +231,37 @@ export default function TransactionDetailPage() {
   // const [recieptModalData, setRecieptModalData] = useState({
   //   title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false
   // });
+
+  const handleCopy = async (text) => {
+    try {
+      if (!text) return;
+
+      // Convert object to formatted string
+      const copyText =
+        typeof text === "object"
+          ? JSON.stringify(text, null, 2)
+          : String(text);
+
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(copyText);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = copyText;
+
+        document.body.appendChild(textArea);
+        textArea.select();
+
+        document.execCommand("copy");
+
+        document.body.removeChild(textArea);
+      }
+
+      toast.success("Copied to clipboard");
+    } catch (error) {
+      console.error("Copy failed:", error);
+      toast.error("Failed to copy");
+    }
+  };
 
   const apiKeys = {
     "bbps-bbps1": "bbpsReport",
@@ -600,7 +663,7 @@ export default function TransactionDetailPage() {
                   <DetailItem label="Bill Number" value={data.billNumber} icon={Tag} color="indigo" />
                 }
                 {
-                  data.billDate !== undefined &&
+                  data.billDate !== undefined && data.billDate !== "" &&
                   <DetailItem label="Bill Date" value={formatDate(data.billDate)} icon={Calendar} color="indigo" />
                 }
                 {
@@ -657,7 +720,7 @@ export default function TransactionDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(TXN_DATA.apiRequest.plainText)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(data.request)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
                     <Copy size={11} /> Copy Payload
                   </motion.button>
                 </div>
@@ -665,7 +728,7 @@ export default function TransactionDetailPage() {
               <div className="p-7 relative">
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-700"><Terminal size={80} className="text-indigo-600" /></div>
                 <pre className="text-[12px] font-mono text-slate-600 overflow-auto custom-scrollbar leading-relaxed selection:bg-indigo-100 max-h-48">
-                  <code className="block py-2">{TXN_DATA.apiRequest.plainText}</code>
+                  <code className="block py-2">{objectToXML(data.request, service)}</code>
                 </pre>
               </div>
             </div>
@@ -684,7 +747,7 @@ export default function TransactionDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(JSON.stringify(TXN_DATA.apiResponse, null, 2))} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(data.response)} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
                     <Copy size={11} /> Copy JSON
                   </motion.button>
                 </div>
@@ -692,7 +755,7 @@ export default function TransactionDetailPage() {
 
               <div className="p-7">
                 <pre className="text-[12px] font-mono text-slate-600 overflow-auto custom-scrollbar leading-relaxed selection:bg-rose-100 max-h-48">
-                  <code className="block py-2">{JSON.stringify(TXN_DATA.apiResponse, null, 2)}</code>
+                  <code className="block py-2">{objectToXML(data.response, service)}</code>
                 </pre>
               </div>
             </div>

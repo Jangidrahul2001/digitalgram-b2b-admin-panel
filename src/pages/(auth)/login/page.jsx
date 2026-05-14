@@ -31,6 +31,7 @@ export default function LoginPage() {
     onSuccess: (data) => {
       if (data.success) {
         setIsLoading(false);
+        toast.success(data?.message|| "OTP sent successfully. Please check your email.");
       }
     },
     onError: (error) => {

@@ -384,10 +384,10 @@ export default function ServiceWiseReportPage() {
         center: true,
         cell: ({ row }) => (
           <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
-          <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
-            {row.original.referenceId}
-          </span>
-        </ClickToCopy>
+            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+              {row.original.referenceId}
+            </span>
+          </ClickToCopy>
         ),
       },
       {
@@ -407,6 +407,26 @@ export default function ServiceWiseReportPage() {
         cell: ({ row }) => (
           <span className="text-slate-500 text-xs font-medium">
             {formatToINR(row.getValue("commission"))}
+          </span>
+        ),
+      },
+        {
+        accessorKey: "charge",
+        header: "CHARGE",
+        center: true,
+        cell: ({ row }) => (
+          <span className="text-slate-500 text-xs font-medium">
+            {formatToINR(row.getValue("charge"))}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "gst",
+        header: "GST",
+        center: true,
+        cell: ({ row }) => (
+          <span className="text-slate-500 text-xs font-medium">
+            {formatToINR(row.getValue("gst") || row.original.gstAmount)}
           </span>
         ),
       },
