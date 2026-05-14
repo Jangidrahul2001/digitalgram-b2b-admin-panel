@@ -6,6 +6,7 @@ import {
   Navigate,
   Outlet,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import RootLayout from "./components/layouts/RootLayout";
 import DashboardLayout from "./components/layouts/DashboardLayout";
@@ -79,16 +80,26 @@ import { store } from './store/store';
 import PageNotFound from "./pages/(auth)/PageNotFound";
 import { PermissionCheck } from "./pages/(auth)/PermissionCheck";
 import NoPermission from "./pages/(auth)/NoPermission";
+import { setNavigateFunction } from "./api/api";
 
+// Component to handle navigate function setup
+const NavigateSetup = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    setNavigateFunction(navigate);
+  }, [navigate]);
+
+  return null;
+};
 
 const ProtectedRoute = ({ children }) => {
-  const location = useLocation(); // Force re-render on route change
+  const location = useLocation();
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
   const token = localStorage.getItem("token");
   console.log(location.pathname, "ppppppp")
 
   if (!isAuthenticated || !token) {
-    // Auto logout if token is missing or not authenticated
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -113,15 +124,12 @@ const PublicRoute = ({ children }) => {
 export default function App() {
   const [loading, setLoading] = useState(true);
 
-  // Use the custom hook to manage dynamic favicon
-  // Pass dynamic URL or leave empty to use default handling in the hook
   useDynamicFavicon(null);
 
   useEffect(() => {
-    // Simulate loading time or wait for resources
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // 2 seconds loading screen
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -139,6 +147,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <BrowserRouter basename={import.meta.env.VITE_BASENAME}>
+        <NavigateSetup />
         <Routes>
           <Route element={<RootLayout />}>
             <Route

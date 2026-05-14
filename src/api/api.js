@@ -1,5 +1,12 @@
 import axios from "axios";
 
+let navigateFunction = null;
+
+// Function to set the navigate function
+export const setNavigateFunction = (navigate) => {
+  navigateFunction = navigate;
+};
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -21,7 +28,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-
 api.interceptors.response.use(
   (response) => response.data,
 
@@ -29,6 +35,7 @@ api.interceptors.response.use(
     const status = error?.response?.status || 500;
     const message = error?.response?.data?.message;
     const errors = error?.response?.data?.errors;
+   
 
     if (error.code === "ERR_NETWORK") {
       return Promise.reject({
@@ -44,8 +51,23 @@ api.interceptors.response.use(
       localStorage.removeItem("isAuthenticated");
       sessionStorage.removeItem("temp_auth_data");
 
-      if (window.location.pathname !== `/login`) {
-        window.location.href = `/login`;
+      if (
+        window.location.pathname !== `${import.meta.env.VITE_BASENAME}/login` &&
+        import.meta.env.VITE_BASENAME != "/"
+      ) {
+        if (navigateFunction) {
+          navigateFunction(`/login`);
+        } else {
+          window.location.href = `${import.meta.env.VITE_BASENAME}/login`;
+        }
+      } else if (
+        window.location.pathname !== `${import.meta.env.VITE_BASENAME}login`
+      ) {
+        if (navigateFunction) {
+          navigateFunction("/login");
+        } else {
+          window.location.href = `/login`;
+        }
       }
 
       return Promise.reject({

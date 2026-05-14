@@ -15,7 +15,6 @@ import { Label } from "../../../../components/ui/label";
 import { toast } from "sonner";
 import { formatNumberInput, handleValidationError } from "../../../../utils/helperFunction";
 import {
-  Building2,
   Globe,
   Mail,
   Phone,
@@ -23,7 +22,6 @@ import {
   UploadCloud,
   Loader2,
   Image as ImageIcon,
-  ChevronRight,
   ShieldCheck,
   Zap
 } from "lucide-react";
@@ -41,18 +39,46 @@ export function MainSettingsTab() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (settings.logoUrl)
+    // Only set URL preview if no local file is selected
+    if (settings.logoUrl && !settings.logo) {
       setLogoPreview(`${import.meta.env.VITE_API_URL}${settings.logoUrl}`);
-    if (settings.faviconUrl)
+    }
+    if (settings.faviconUrl && !settings.favicon) {
       setFaviconPreview(`${import.meta.env.VITE_API_URL}${settings.faviconUrl}`);
-  }, [settings]);
+    }
+  }, [settings.logoUrl, settings.faviconUrl, settings.logo, settings.favicon]);
+
+  const validateFile = (file) => {
+    // Check file type
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg',];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only PNG and JPG files are allowed");
+      return false;
+    }
+
+    // Check file size (200KB = 200 * 1024 bytes)
+    const maxSize = 200 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File size must be less than 200KB");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleFileChange = (e, setPreview, key) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file before processing
+      if (!validateFile(file)) {
+        // Clear the input
+        e.target.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result);
+        setPreview(reader.result); // This will immediately show the new image
         dispatch(updateLocalSetting({ key, value: file }));
       };
       reader.readAsDataURL(file);
@@ -72,33 +98,6 @@ export function MainSettingsTab() {
     }
   };
 
-  const GlassRow = ({ label, icon: Icon, description, children, updateKey, color = "slate" }) => (
-    <div className="group relative flex flex-col md:flex-row md:items-center justify-between p-4 hover:bg-slate-50/50 transition-all rounded-2xl gap-4">
-      <div className="flex gap-3 max-w-sm">
-        <div className={`mt-1 p-2 rounded-xl bg-${color}-50 text-${color}-600 group-hover:scale-105 transition-transform duration-300`}>
-          {Icon && <Icon className="w-4 h-4" />}
-        </div>
-        <div className="space-y-0.5">
-          <Label className="text-sm font-bold text-slate-800">{label}</Label>
-          <p className="text-[11px] text-slate-400 leading-tight font-medium">{description}</p>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2 flex-1 max-w-[420px]">
-        <div className="relative flex-1">
-          {children}
-        </div>
-        <Button
-          onClick={() => handleUpdate(updateKey)}
-          disabled={loading}
-          className="bg-slate-900 hover:bg-slate-800 text-white h-9 px-4 rounded-xl text-xs font-semibold shrink-0"
-        >
-          {updatingKey === updateKey ? <Loader2 className="w-3.5 h-3.5 px-4 animate-spin text-white" /> : "Apply"}
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
     <div className="w-full pb-32 space-y-8">
 
@@ -117,7 +116,7 @@ export function MainSettingsTab() {
               <div className="flex items-center justify-between px-1">
                 <div className="space-y-0.5">
                   <Label className="text-[13px] font-bold text-slate-800">Primary Logo</Label>
-                  <p className="text-[10px] text-slate-400 font-medium tracking-tight">SVG/PNG Recommended</p>
+                  <p className="text-[10px] text-slate-400 font-medium tracking-tight">PNG/JPG • Max 200KB</p>
                 </div>
                 {updatingKey === "logo" && <Loader2 className="w-3.5 h-3.5 text-slate-700 animate-spin" />}
               </div>
@@ -135,7 +134,7 @@ export function MainSettingsTab() {
                 </div>
                 <label className="absolute bottom-2 right-2 p-2 bg-white rounded-xl shadow-md border border-slate-100 cursor-pointer hover:scale-105 transition-transform active:scale-95">
                   <UploadCloud className="w-4 h-4 text-slate-700" />
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, setLogoPreview, "logo")} />
+                  <input type="file" className="hidden" accept=".png,.jpg,.jpeg" onChange={(e) => handleFileChange(e, setLogoPreview, "logo")} />
                 </label>
               </div>
 
@@ -154,7 +153,7 @@ export function MainSettingsTab() {
               <div className="flex items-center justify-between px-1 mb-4">
                 <div className="space-y-0.5">
                   <Label className="text-[13px] font-bold text-slate-800">Favicon</Label>
-                  <p className="text-[10px] text-slate-400 font-medium tracking-tight">32 x 32px</p>
+                  <p className="text-[10px] text-slate-400 font-medium tracking-tight">PNG/JPG • Max 200KB</p>
                 </div>
                 {updatingKey === "favicon" && <Loader2 className="w-3.5 h-3.5 text-slate-700 animate-spin" />}
               </div>
@@ -170,7 +169,7 @@ export function MainSettingsTab() {
                   </div>
                   <label className="absolute -bottom-1.5 -right-1.5 p-1.5 bg-indigo-600 text-white rounded-lg shadow-lg cursor-pointer hover:bg-indigo-700 transition-colors border-2 border-white">
                     <UploadCloud className="w-3 h-3" />
-                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, setFaviconPreview, "favicon")} />
+                    <input type="file" className="hidden" accept=".png,.jpg,.jpeg" onChange={(e) => handleFileChange(e, setFaviconPreview, "favicon")} />
                   </label>
                 </div>
                 <p className="text-[11px] text-slate-400 font-medium text-center max-w-[150px] leading-tight">Displayed in browser tab.</p>
@@ -197,62 +196,126 @@ export function MainSettingsTab() {
 
         <Card className="border border-slate-100 shadow-sm bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-2 space-y-1">
-            <GlassRow
-              label="Site Header Title"
-              icon={Globe}
-              color="indigo"
-              description="Primary branding title."
-              updateKey="title"
-            >
-              <Input
-                value={settings.title || ""}
-                onChange={(e) => dispatch(updateLocalSetting({ key: "title", value: e.target.value }))}
-                className="bg-slate-50/50 border-0 focus-visible:ring-0 rounded-xl h-9 text-xs font-semibold"
-              />
-            </GlassRow>
+            {/* Site Header Title */}
+            <div className="group relative flex flex-col md:flex-row md:items-center justify-between p-4 hover:bg-slate-50/50 transition-all rounded-2xl gap-4">
+              <div className="flex gap-3 max-w-sm">
+                <div className="mt-1 p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-105 transition-transform duration-300">
+                  <Globe className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold text-slate-800">Site Header Title</Label>
+                  <p className="text-[11px] text-slate-400 leading-tight font-medium">Primary branding title.</p>
+                </div>
+              </div>
 
-            <GlassRow
-              label="Support Email"
-              icon={Mail}
-              color="blue"
-              description="Public contact email."
-              updateKey="email"
-            >
-              <Input
-                type="email"
-                value={settings.email || ""}
-                onChange={(e) => dispatch(updateLocalSetting({ key: "email", value: e.target.value }))}
-                className="bg-slate-50/50 border-0 focus-visible:ring-0 rounded-xl h-9 text-xs font-semibold"
-              />
-            </GlassRow>
+              <div className="flex items-center gap-2 flex-1 max-w-[420px]">
+                <div className="relative flex-1">
+                  <Input
+                    value={settings.title || ""}
+                    onChange={(e) => dispatch(updateLocalSetting({ key: "title", value: e.target.value }))}
+                    className=" h-9 text-xs"
+                  />
+                </div>
+                <Button
+                  onClick={() => handleUpdate("title")}
+                  disabled={loading}
+                  className="bg-slate-900 hover:bg-slate-800 text-white h-9 px-4 rounded-xl text-xs font-semibold shrink-0"
+                >
+                  {updatingKey === "title" ? <Loader2 className="w-3.5 h-3.5 px-4 animate-spin text-white" /> : "Apply"}
+                </Button>
+              </div>
+            </div>
 
-            <GlassRow
-              label="Contact Hotline"
-              icon={Phone}
-              color="emerald"
-              description="98756XXXXX"
-              updateKey="phone"
-            >
-              <Input
-                value={settings.phone || ""}
-                onChange={(e) => dispatch(updateLocalSetting({ key: "phone", value: formatNumberInput(e.target.value, 10) }))}
-                className="bg-slate-50/50 border-0 focus-visible:ring-0 rounded-xl h-9 text-xs font-semibold"
-              />
-            </GlassRow>
+            {/* Support Email */}
+            <div className="group relative flex flex-col md:flex-row md:items-center justify-between p-4 hover:bg-slate-50/50 transition-all rounded-2xl gap-4">
+              <div className="flex gap-3 max-w-sm">
+                <div className="mt-1 p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform duration-300">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold text-slate-800">Support Email</Label>
+                  <p className="text-[11px] text-slate-400 leading-tight font-medium">Public contact email.</p>
+                </div>
+              </div>
 
-            <GlassRow
-              label="Head Office Address"
-              icon={MapPin}
-              color="rose"
-              description="Primary business location."
-              updateKey="address"
-            >
-              <Input
-                value={settings.address || ""}
-                onChange={(e) => dispatch(updateLocalSetting({ key: "address", value: e.target.value }))}
-                className="bg-slate-50/50 border-0 focus-visible:ring-0 rounded-xl h-9 text-xs font-semibold"
-              />
-            </GlassRow>
+              <div className="flex items-center gap-2 flex-1 max-w-[420px]">
+                <div className="relative flex-1">
+                  <Input
+                    type="email"
+                    value={settings.email || ""}
+                    onChange={(e) => dispatch(updateLocalSetting({ key: "email", value: e.target.value }))}
+                    className=" h-9 text-xs"
+                  />
+                </div>
+                <Button
+                  onClick={() => handleUpdate("email")}
+                  disabled={loading}
+                  className="bg-slate-900 hover:bg-slate-800 text-white h-9 px-4 rounded-xl text-xs font-semibold shrink-0"
+                >
+                  {updatingKey === "email" ? <Loader2 className="w-3.5 h-3.5 px-4 animate-spin text-white" /> : "Apply"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Contact Hotline */}
+            <div className="group relative flex flex-col md:flex-row md:items-center justify-between p-4 hover:bg-slate-50/50 transition-all rounded-2xl gap-4">
+              <div className="flex gap-3 max-w-sm">
+                <div className="mt-1 p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform duration-300">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold text-slate-800">Contact Hotline</Label>
+                  <p className="text-[11px] text-slate-400 leading-tight font-medium">98756XXXXX</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-1 max-w-[420px]">
+                <div className="relative flex-1">
+                  <Input
+                    value={settings.phone || ""}
+                    onChange={(e) => dispatch(updateLocalSetting({ key: "phone", value: formatNumberInput(e.target.value, 10) }))}
+                    className=" h-9 text-xs"
+                  />
+                </div>
+                <Button
+                  onClick={() => handleUpdate("phone")}
+                  disabled={loading}
+                  className="bg-slate-900 hover:bg-slate-800 text-white h-9 px-4 rounded-xl text-xs font-semibold shrink-0"
+                >
+                  {updatingKey === "phone" ? <Loader2 className="w-3.5 h-3.5 px-4 animate-spin text-white" /> : "Apply"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Head Office Address */}
+            <div className="group relative flex flex-col md:flex-row md:items-center justify-between p-4 hover:bg-slate-50/50 transition-all rounded-2xl gap-4">
+              <div className="flex gap-3 max-w-sm">
+                <div className="mt-1 p-2 rounded-xl bg-rose-50 text-rose-600 group-hover:scale-105 transition-transform duration-300">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold text-slate-800">Head Office Address</Label>
+                  <p className="text-[11px] text-slate-400 leading-tight font-medium">Primary business location.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-1 max-w-[420px]">
+                <div className="relative flex-1">
+                  <Input
+                    value={settings.address || ""}
+                    onChange={(e) => dispatch(updateLocalSetting({ key: "address", value: e.target.value }))}
+                    className=" h-9 text-xs"
+                  />
+                </div>
+                <Button
+                  onClick={() => handleUpdate("address")}
+                  disabled={loading}
+                  className="bg-slate-900 hover:bg-slate-800 text-white h-9 px-4 rounded-xl text-xs font-semibold shrink-0"
+                >
+                  {updatingKey === "address" ? <Loader2 className="w-3.5 h-3.5 px-4 animate-spin text-white" /> : "Apply"}
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>
