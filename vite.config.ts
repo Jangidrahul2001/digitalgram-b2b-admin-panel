@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: env.VITE_BASENAME || "/",
+    assetsInclude: ["**/*.lottie"],
 
     plugins: [react()],
 

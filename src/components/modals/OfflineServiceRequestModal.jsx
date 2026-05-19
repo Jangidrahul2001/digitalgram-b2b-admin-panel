@@ -45,8 +45,8 @@ const OfflineServiceRequestModal = ({ isOpen, onClose, requestId }) => {
           />
 
           <motion.div
-            initial={{ scale: 0.9, opacity: 0}}
-            animate={{ scale: 1, opacity: 1}}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
             className="relative z-10 w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden ring-1 ring-black/5 flex flex-col max-h-[90vh]"
@@ -59,7 +59,7 @@ const OfflineServiceRequestModal = ({ isOpen, onClose, requestId }) => {
                     <FileText className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-none mb-1.5">
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-none mb-1.5">
                       Request Details
                     </h2>
                     <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ const OfflineServiceRequestModal = ({ isOpen, onClose, requestId }) => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 px-1">
                     <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
-                    <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                       Submission Details
                     </h4>
                   </div>
@@ -118,7 +118,7 @@ const OfflineServiceRequestModal = ({ isOpen, onClose, requestId }) => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 px-1">
                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                       Required Documents
                     </h4>
                   </div>

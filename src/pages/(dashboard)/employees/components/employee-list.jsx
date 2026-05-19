@@ -22,6 +22,7 @@ export function EmployeeList() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { refetch: fetchEmployee } = useFetch(
     `${apiEndpoints.employeeList}?page=${pageIndex}&limit=${pageSize}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}`,
@@ -50,9 +51,11 @@ export function EmployeeList() {
           setSelectedEmployeeId("");
           setDeleteModalOpen(false);
           fetchEmployee();
+          setIsDeleting(false)
         }
       },
       onError: (error) => {
+        setIsDeleting(false)
         toast.error(
           handleValidationError(error) || "Failed to delete employee",
         );
@@ -88,6 +91,7 @@ export function EmployeeList() {
   };
 
   const handleConfirmDelete = async () => {
+    setIsDeleting(true)
     await deleteEmployee({ id: selectedEmployeeId });
   };
 
@@ -213,6 +217,7 @@ export function EmployeeList() {
         confirmText="Delete"
         cancelText="Cancel"
         isDestructive={true}
+        isButtonDisabled={isDeleting}
       />
     </>
   );

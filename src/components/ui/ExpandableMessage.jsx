@@ -22,7 +22,7 @@ const ExpandableMessage = ({ text, maxWidth = "150px" }) => {
           setIsOpen(!isOpen);
         }}
       >
-        <span className="text-[11px] font-medium text-slate-400 capitalize whitespace-nowrap transition-colors duration-200 hover:text-indigo-600">
+        <span className="text-[11px] font-medium text-slate-400 capitalize whitespace-nowrap transition-colors duration-200 hover:text-slate-600">
           {text}
         </span>
       </div>

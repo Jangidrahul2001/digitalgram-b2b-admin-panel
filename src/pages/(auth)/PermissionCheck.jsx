@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchProfile } from "../../store/slices/profileSlice";
 import { toast } from "sonner";
 import { permissionCheckData } from "../../api/ui-config-mock";
-import path from "node:path";
 
 export function PermissionCheck({ children }) {
     const { pathname } = useLocation();

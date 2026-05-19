@@ -16,7 +16,7 @@ import { DataTable } from "../../../../components/tables/data-table";
 import { PageLayout } from "../../../../components/layouts/page-layout";
 import { fetchAdminWallet } from "../../../../store/slices/walletSlice";
 import { FundRequestActionModal } from "../../../../components/modals/FundRequestActionModal";
-import { formatDate, formatToINR, handleValidationError } from "../../../../utils/helperFunction";
+import { formatDate, formatDateForBackend, formatToINR, handleValidationError } from "../../../../utils/helperFunction";
 import { DateRangePicker } from "../../../../components/ui/date-range-picker";
 import { ActionButtons } from "../../../../components/ui/ActionButtons";
 import StatusBadge from "../../../../components/ui/StatusBadge";
@@ -77,7 +77,7 @@ export default function FundRequestPage() {
 
   const { refetch: refetchFundRequestList } = useFetch(
     `${apiEndpoints.fetchFundRequest}?status=${statusFilter || ""}&search=${searchQuery}&page=${pageIndex}&limit=${pageSize}${selectedUser && selectedUser !== "" ? `&userId=${selectedUser}` : ""
-    }${date.from ? `&startDate=${format(date.from, "yyyy-MM-dd")}` : ""}${date.to ? `&endDate=${format(date.to, "yyyy-MM-dd")}` : ""
+    }${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""
     }`,
     {
       onSuccess: (data) => {
@@ -97,8 +97,8 @@ export default function FundRequestPage() {
   );
 
   const { refetch: refetchFundStats } = useFetch(
-    `${apiEndpoints.fetchFundStats}?search=${searchQuery}${selectedUser && selectedUser !== "" ? `&userId=${selectedUser}` : ""}${date.from ? `&startDate=${format(date.from, "yyyy-MM-dd")}` : ""
-    }${date.to ? `&endDate=${format(date.to, "yyyy-MM-dd")}` : ""}`,
+    `${apiEndpoints.fetchFundStats}?search=${searchQuery}${selectedUser && selectedUser !== "" ? `&userId=${selectedUser}` : ""}${date.from ? `&from=${formatDateForBackend(date.from)}` : ""
+    }${date.to ? `&to=${formatDateForBackend(date.to)}` : ""}`,
     {
       onSuccess: (data) => {
         if (data.success) {
@@ -221,7 +221,7 @@ export default function FundRequestPage() {
           const utr = row.getValue("utrNumber");
           return (
 
-            <ClickToCopy text={utr} className="whiteSpace-nowrap text-slate-600 font-semibold bg-slate-50 border border-slate-200 px-2.5 py-1 font-mono text-[11px] rounded-lg  cursor-pointer hover:bg-slate-100 hover:text-slate-900 transition-all active:scale-95 " >
+            <ClickToCopy text={utr} className="whiteSpace-nowrap text-slate-600 font-semibold bg-slate-50 border border-slate-200 px-2.5 py-1 text-[11px] rounded-lg  cursor-pointer hover:bg-slate-100 hover:text-slate-900 transition-all active:scale-95 " >
               {utr}
             </ClickToCopy>
 

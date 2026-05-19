@@ -39,6 +39,13 @@ import { useDashboard } from "../../../hooks/use-dashboard";
 import { DateRangePicker } from "../../../components/ui/date-range-picker";
 import { DataTable } from "../../../components/tables/data-table";
 import { cn } from "../../../lib/utils";
+import { useFetch } from "../../../hooks/useFetch";
+import { apiEndpoints } from "../../../api/apiEndpoints";
+import { formatDate, formatToINR } from "../../../utils/helperFunction";
+import StatusBadge from "../../../components/ui/StatusBadge";
+import ClickToCopy from "../../../components/ui/ClickToCopy";
+import ExpandableMessage from "../../../components/ui/ExpandableMessage";
+
 
 //---------------------------------------------------------
 
@@ -54,7 +61,6 @@ export default function DashboardPage() {
     setFundRequestsPeriod,
     selectOptions,
     userOptions,
-    transactionFeed,
     businessVolume,
     successFailedData,
     channelData,
@@ -65,72 +71,87 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
   const [date, setDate] = useState({ from: null, to: null });
 
-  // ------------------------------------------------------------
+  const [latestTransactions, setLatestTransactions] = useState([]);
+
+
+  const { refetch: fetchLatestTransaction, isLoading: latestTransactionLoading } = useFetch(
+    `${apiEndpoints.fetchLatestTransactions}`,
+    {
+      onSuccess: (data) => {
+        if (data && data?.success && data?.data) {
+          setLatestTransactions(data?.data)
+        }
+      },
+      onError: (error) => {
+        console.log("error in getting latest transactions", error);
+        toast.error(handleValidationError(error) || "Failed to fetch latest transactions");
+      },
+    },
+    true,
+  );
+
   // Table Columns
-  // ------------------------------------------------------------
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: "TRANSACTION ID",
+        accessorKey: "index",
+        header: "SR. NO.",
+        cell: ({ row, index }) => index + 1,
+      },
+      {
+        accessorKey: "referenceId",
+        header: "Reference ID",
         cell: ({ row }) => (
-          <span className="mono-badge">#{row.getValue("id")}</span>
+          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+              {row.original.referenceId}
+            </span>
+          </ClickToCopy>
         ),
       },
       {
-        accessorKey: "service",
-        header: "SERVICE TYPE",
-        cell: ({ row }) => {
-          const service = row.getValue("service");
-          return (
-            <div className="flex items-center justify-center gap-3">
-              <div className={cn(
-                "w-9 h-9 rounded-xl flex items-center justify-center border border-white",
-                service === "Money Transfer" ? "bg-indigo-50 text-indigo-600" :
-                  service === "AEPS Withdrawal" ? "bg-blue-50 text-blue-600" :
-                    service === "Bill Payment" ? "bg-orange-50 text-orange-600" :
-                      "bg-emerald-50 text-emerald-600"
-              )}>
-                {service === "Money Transfer" ? <ArrowUpRight className="w-4.5 h-4.5" /> : <Activity className="w-4.5 h-4.5" />}
-              </div>
-              <span className="font-bold text-slate-900 uppercase tracking-tight text-[12px]">{service}</span>
-            </div>
-          );
-        }
+        accessorKey: "serviceType",
+        header: "SERVICE",
+        cell: ({ row }) => row.getValue("serviceType"),
       },
       {
         accessorKey: "user",
-        header: "CLIENT / RETAILER",
-        cell: ({ row }) => (
-          <div className="flex items-center justify-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-2 ring-slate-50">
-              {row.getValue("user").charAt(0)}
-            </div>
-            <span className="text-[13px] font-bold text-slate-800 tracking-tight transition-colors group-hover:text-slate-950">
-              {row.getValue("user")}
-            </span>
-          </div>
-        )
-      },
-      {
-        accessorKey: "date",
-        header: "LOGGED AT",
+        header: "USER",
         cell: ({ row }) => {
-          const [datePart, timePart] = row.getValue("date").split(",");
+          const name = row.original.fullName || "--";
+          const userName = row.original?.userName;
           return (
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[13px] font-bold text-slate-900 tracking-tight">{datePart}</span>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{timePart}</span>
+            <div className="flex flex-col items-center justify-center text-center">
+              <span className="font-semibold text-[13px] text-slate-900">
+                {name}
+              </span>
+              {userName && (
+                <ClickToCopy text={userName}>
+                  <span className="text-[11px] text-slate-500 font-medium cursor-pointer hover:text-slate-900 transition-colors">
+                    ({userName})
+                  </span>
+                </ClickToCopy>
+              )}
             </div>
           );
         }
+
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Date",
+        cell: ({ row }) => (
+          <span className="">
+            {formatDate(row.getValue("createdAt"))}
+          </span>
+        )
       },
       {
         accessorKey: "amount",
         header: "AMOUNT",
         cell: ({ row }) => (
-          <span className="font-black text-slate-950 text-[14px] tracking-tighter">
-            {row.getValue("amount")}
+          <span className="font-bold text-slate-950 text-[14px] tracking-tighter">
+            {formatToINR(row.getValue("amount"))}
           </span>
         )
       },
@@ -140,23 +161,16 @@ export default function DashboardPage() {
         cell: ({ row }) => {
           const status = row.getValue("status");
           return (
-            <div className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-              status === "Success" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                status === "Pending" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                  "bg-rose-50 text-rose-700 border-rose-200"
-            )}>
-              <span className={cn(
-                "h-1.5 w-1.5 rounded-full",
-                status === "Success" ? "bg-emerald-500" :
-                  status === "Pending" ? "bg-amber-500" :
-                    "bg-rose-500"
-              )} />
-              {status}
-            </div>
+            <StatusBadge status={status} />
           );
         }
-      }
+      },
+      {
+        accessorKey: "remark",
+        header: "DESCRIPTION",
+        center: true,
+        cell: ({ row }) => <ExpandableMessage text={row.getValue("remark")} />
+      },
     ],
     []
   );
@@ -251,7 +265,7 @@ export default function DashboardPage() {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
                 <div className="text-center">
                   <p className="text-slate-400 text-xs font-medium font-bold uppercase tracking-widest">Total</p>
-                  <p className="text-slate-950 text-2xl font-black tracking-tighter">1,240</p>
+                  <p className="text-slate-950 text-2xl font-bold tracking-tighter">1,240</p>
                 </div>
               </div>
             </div>
@@ -326,8 +340,8 @@ export default function DashboardPage() {
                 <BentoCard hasHover={false} key={idx} className="p-6 flex flex-col justify-center gap-2 border-l-4 border-l-slate-950 ">
                   <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">{biz.label}</p>
                   <div className="flex items-end gap-3">
-                    <h3 className="text-3xl font-black text-slate-950 tracking-tighter">{biz.value}</h3>
-                    <span className={cn("text-[10px] font-black mb-1.5 px-2 py-0.5 rounded-full uppercase tracking-wider", biz.trend.startsWith('+') ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700')}>
+                    <h3 className="text-3xl font-bold text-slate-950 tracking-tighter">{biz.value}</h3>
+                    <span className={cn("text-[10px] font-bold mb-1.5 px-2 py-0.5 rounded-full uppercase tracking-wider", biz.trend.startsWith('+') ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700')}>
                       {biz.trend}
                     </span>
                   </div>
@@ -339,7 +353,7 @@ export default function DashboardPage() {
           <Card className="border border-slate-100 shadow-xs flex-1 bg-white/40 backdrop-blur-md overflow-hidden rounded-2xl">
             {!loading && (
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-black text-slate-950 flex items-center justify-between uppercase tracking-tighter">
+                <CardTitle className="text-lg font-bold text-slate-950 flex items-center justify-between uppercase tracking-tighter">
                   <span>Reports Overview</span>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-slate-100">
                     <MoreHorizontal className="w-4 h-4 text-slate-500" />
@@ -361,7 +375,7 @@ export default function DashboardPage() {
                   <div className="group relative bg-white border border-slate-100 hover:border-slate-300 rounded-2xl p-5 transition-all shadow-sm flex flex-col h-[190px] overflow-hidden">
                     <div className="flex justify-between items-start z-10 relative">
                       <div>
-                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Daily Log</span>
+                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Daily Log</span>
                         <h4 className="font-bold text-slate-900 tracking-tight">Financial Summary</h4>
                       </div>
                       <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100">
@@ -384,7 +398,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="z-10 mt-auto flex items-center justify-between relative">
-                      <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Sync Instant</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sync Instant</span>
                       <Button size="icon" className="h-8 w-8 rounded-full bg-slate-950 hover:bg-black text-white shadow-lg">
                         <Download className="w-3.5 h-3.5" />
                       </Button>
@@ -395,7 +409,7 @@ export default function DashboardPage() {
                   <div className="group relative bg-white border border-slate-100 hover:border-slate-300 rounded-2xl p-5 transition-all shadow-sm flex flex-col h-[190px] overflow-hidden">
                     <div className="flex justify-between items-start z-10 relative">
                       <div>
-                        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Cycle Wise</span>
+                        <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Cycle Wise</span>
                         <h4 className="font-bold text-slate-900 tracking-tight">Performance Audit</h4>
                       </div>
                       <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-100">
@@ -418,7 +432,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="z-10 mt-auto flex items-center justify-between relative">
-                      <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Growth 12%</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Growth 12%</span>
                       <Button size="icon" className="h-8 w-8 rounded-full bg-slate-950 hover:bg-black text-white shadow-lg">
                         <Download className="w-3.5 h-3.5" />
                       </Button>
@@ -429,7 +443,7 @@ export default function DashboardPage() {
                   <div className="group relative bg-white border border-slate-100 hover:border-slate-300 rounded-2xl p-5 transition-all shadow-sm flex flex-col h-[190px] overflow-hidden">
                     <div className="flex justify-between items-start z-10 relative">
                       <div>
-                        <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Channel Log</span>
+                        <span className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Channel Log</span>
                         <h4 className="font-bold text-slate-900 tracking-tight">Service Breakdown</h4>
                       </div>
                       <div className="h-9 w-9 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 shadow-sm border border-orange-100">
@@ -446,7 +460,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="z-10 mt-auto flex items-center justify-between relative">
-                      <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Pro Analytics</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Pro Analytics</span>
                       <Button size="icon" className="h-8 w-8 rounded-full bg-slate-950 hover:bg-black text-white shadow-lg">
                         <Download className="w-3.5 h-3.5" />
                       </Button>
@@ -463,7 +477,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-6">
         <Card className="border border-slate-100 shadow-sm bg-white/60 backdrop-blur-md overflow-hidden rounded-2xl">
           <CardHeader className="pb-2 border-b border-slate-50/50">
-            <CardTitle className="text-lg font-black text-slate-950 flex items-center justify-between uppercase tracking-tighter">
+            <CardTitle className="text-lg font-bold text-slate-950 flex items-center justify-between uppercase tracking-tighter">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-slate-950 rounded-xl text-white ">
                   <Wallet className="w-5 h-5" />
@@ -543,12 +557,12 @@ export default function DashboardPage() {
                                 item.name === 'Pending' ? <Clock className="w-5.5 h-5.5" /> :
                                   <XCircle className="w-5.5 h-5.5" />}
                             </div>
-                            <span className="text-[11px] font-black text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100 uppercase tracking-widest">{percentage}% Share</span>
+                            <span className="text-[11px] font-bold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100 uppercase tracking-widest">{percentage}% Share</span>
                           </div>
 
                           <div>
-                            <p className="text-[11px] font-black text-slate-400 mb-1 uppercase tracking-widest">{item.name} Total</p>
-                            <h3 className="text-3xl font-black text-slate-950 tracking-tighter">₹ {(item.value / 1000).toFixed(1)}k</h3>
+                            <p className="text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-widest">{item.name} Total</p>
+                            <h3 className="text-3xl font-bold text-slate-950 tracking-tighter">₹ {(item.value / 1000).toFixed(1)}k</h3>
                             <p className="text-[11px] font-bold text-slate-400 mt-2 bg-slate-50/50 inline-block px-2 py-0.5 rounded-md border border-slate-50">
                               {item.count} Processed Transactions
                             </p>
@@ -575,16 +589,14 @@ export default function DashboardPage() {
 
         <DataTable
           columns={columns}
-          data={transactionFeed}
-          isLoading={loading}
-          columnVisibility={{}}
-          setColumnVisibility={() => { }}
-          pageSize={10}
-          totalRecords={transactionFeed.length}
-          exportData={transactionFeed}
-          fileName="Dashboard_Transaction_Ledger"
+          data={latestTransactions}
+          isLoading={latestTransactionLoading}
+          hidePagination={true}
+          exportData={latestTransactions}
+          fileName="latest_transactions"
           onSearch={(val) => setSearch(val)}
           search={search}
+
         />
       </div>
     </PageLayout>

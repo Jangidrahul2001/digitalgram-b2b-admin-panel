@@ -111,7 +111,7 @@ export default function PackagePage() {
   );
 
   const { refetch: refetchPackages } = useFetch(
-    `${apiEndpoints.fetchPackages}`,
+    `${apiEndpoints.fetchPackages}?search=${search}`,
     {
       onSuccess: (data) => {
         if (data?.success && data?.data) {
@@ -125,8 +125,11 @@ export default function PackagePage() {
         setFetching(false);
       },
     },
-    true, // auto fetch on mount
+    false, // auto fetch on mount
   );
+  useEffect(() => {
+    refetchPackages();
+  }, [search]);
 
   const { post: createPackage } = usePost(apiEndpoints?.createPackage, {
     onSuccess: (data) => {

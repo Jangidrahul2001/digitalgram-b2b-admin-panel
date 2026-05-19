@@ -24,7 +24,7 @@ const StatusToggle = ({ row, updateUserStatus }) => {
   const id = row.original._id;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOptimisticActive, setIsOptimisticActive] = useState(row.original.isActive);
- 
+
 
   // Sync with prop if it changes from outside (e.g., API response or external refresh)
   useEffect(() => {
@@ -259,6 +259,15 @@ export default function UsersPage() {
             <span className="text-[13px] text-slate-700 font-medium">
               {row.getValue("parentUser") || "Admin"}
             </span>
+            {
+              row.original.parentUser &&
+
+              <ClickToCopy text={row.original.parentUserName}>
+                <span className="text-[11px] text-slate-500 font-medium hover:text-slate-700 cursor-pointer transition-colors inline-block mt-0.5">
+                  ( {row.original.parentUserName} )
+                </span>
+              </ClickToCopy>
+            }
           </div>
         ),
       },

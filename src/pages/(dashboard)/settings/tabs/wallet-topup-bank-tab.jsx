@@ -22,8 +22,62 @@ import { useDelete } from "../../../../hooks/useDelete";
 import { formatIfscInput, formatNameInputWithSpace, formatNumberInput, formatUpiInput, handleValidationError, ifscRegex } from "../../../../utils/helperFunction";
 import { DataTable } from "../../../../components/tables/data-table";
 import ClickToCopy from "../../../../components/ui/ClickToCopy";
+import { cn } from "../../../../lib/utils";
 
-const StatusBadge = ({ row, refetchBankTopupList }) => {
+// const StatusBadge = ({ row, refetchBankTopupList }) => {
+//   const id = row._id;
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+
+//   const { patch: updateBankTopupStatus } = usePatch({
+//     onSuccess: (data) => {
+//       if (data.success) {
+//         toast.success(data.message || "Status updated successfully");
+//         refetchBankTopupList();
+//         setIsModalOpen(false);
+//       }
+//     },
+//     onError: (error) => {
+//       toast.error(handleValidationError(error) || "Something went wrong");
+//     },
+//   });
+
+//   const handleConfirm = () => {
+//     updateBankTopupStatus(`${apiEndpoints?.updateBankTopupStatus}/${id}`, {});
+//   };
+
+//   return (
+//     <>
+//       <motion.button
+//         whileHover={{ scale: 1.05 }}
+//         whileTap={{ scale: 0.95 }}
+//         onClick={() => setIsModalOpen(true)}
+//         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all ${row?.isActive
+//           ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+//           : "bg-slate-50 text-slate-400 border border-slate-100"
+//           }`}
+//       >
+//         <span className={`h-1.5 w-1.5 rounded-full ${row?.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
+//         {row?.isActive ? "Active" : "Inactive"}
+//       </motion.button>
+
+//       <ConfirmationModal
+//         isOpen={isModalOpen}
+//         onClose={() => setIsModalOpen(false)}
+//         onConfirm={handleConfirm}
+//         title={row?.isActive ? "Deactivate Bank?" : "Activate Bank?"}
+//         description={
+//           row?.isActive
+//             ? "Are you sure you want to deactivate this bank account?"
+//             : "Are you sure you want to activate this bank account?"
+//         }
+//         confirmText={row?.isActive ? "Deactivate" : "Activate"}
+//         isDestructive={row?.isActive}
+//       />
+//     </>
+//   );
+// };
+
+const StatusToggle = ({ row, refetchBankTopupList }) => {
   const id = row._id;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,18 +100,22 @@ const StatusBadge = ({ row, refetchBankTopupList }) => {
 
   return (
     <>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <div
         onClick={() => setIsModalOpen(true)}
-        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all ${row?.isActive
-          ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-          : "bg-slate-50 text-slate-400 border border-slate-100"
-          }`}
+        className={cn(
+          "group relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/20",
+          row?.isActive ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]" : "bg-slate-200"
+        )}
       >
-        <span className={`h-1.5 w-1.5 rounded-full ${row?.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
-        {row?.isActive ? "Active" : "Inactive"}
-      </motion.button>
+        <motion.span
+          animate={{ x: row?.isActive ? 20 : 0 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          className={cn(
+            "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0"
+          )}
+        />
+        <span className="sr-only">Toggle status</span>
+      </div>
 
       <ConfirmationModal
         isOpen={isModalOpen}
@@ -270,7 +328,7 @@ export function WalletTopupBankTab() {
       header: "Status",
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          <StatusBadge row={row.original} refetchBankTopupList={refetchBankTopupList} />
+          <StatusToggle row={row.original} refetchBankTopupList={refetchBankTopupList} />
         </div>
       )
     },
@@ -315,7 +373,7 @@ export function WalletTopupBankTab() {
                 <Plus className="h-4 w-4" />
               </div>
               Add New Bank Account
-            </CardTitle>  
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-6 md:p-10">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10">

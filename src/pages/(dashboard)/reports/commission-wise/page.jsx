@@ -17,6 +17,7 @@ import {
   formatDate,
   formatToINR,
   handleValidationError,
+  ServiceLabel,
 } from "../../../../utils/helperFunction";
 import { cn } from "../../../../lib/utils";
 import { motion } from "framer-motion";
@@ -71,12 +72,15 @@ export default function CommissionWiseReportPage() {
     if (selectedUser && selectedUser !== "all") {
       params.userId = selectedUser;
     }
+    if (search) {
+      params.search = search;
+    }
     if (selectedService && selectedService !== "all") {
       params.service = selectedService;
     }
 
     return params;
-  }, [currentPage, pageSize, selectedUser, selectedService, date]);
+  }, [currentPage, pageSize, selectedUser, selectedService, date, search]);
 
   // Fetch commission report data
   const {
@@ -93,6 +97,8 @@ export default function CommissionWiseReportPage() {
         }
       },
       onError: (error) => {
+        setReportsData([]);
+        setTotalRecords(0);
         console.error("Failed to fetch commission report:", error);
         toast.error(handleValidationError(error) || "Something went wrong");
       }
@@ -132,7 +138,7 @@ export default function CommissionWiseReportPage() {
       return [
         allServiceOption,
         ...servicesData.data.map((service) => ({
-          label: service.name,
+          label: ServiceLabel(service.name),
           value: service._id,
         }))
       ];
@@ -159,7 +165,7 @@ export default function CommissionWiseReportPage() {
 
   const filterActions = (
     <div className="flex flex-wrap items-center gap-3">
-      <div className="w-[160px]">
+      {/* <div className="w-[160px]">
         <Select
           placeholder="Service"
           options={serviceOptions}
@@ -170,7 +176,7 @@ export default function CommissionWiseReportPage() {
           }}
           className="h-9 md:h-10 border-slate-200 rounded-xl text-xs font-bold"
         />
-      </div>
+      </div> */}
 
       <div className="w-[180px]">
         <Select
@@ -212,7 +218,7 @@ export default function CommissionWiseReportPage() {
       header: "DATE",
       center: true,
       cell: ({ row }) => (
-        <span className="text-slate-600 font-medium whitespace-nowrap text-[13px]">
+        <span className="text-[11px] whitespace-nowrap">
           {formatDate(row.getValue("createdAt"))}
         </span>
       ),
@@ -226,7 +232,7 @@ export default function CommissionWiseReportPage() {
           <span className="font-semibold text-[13px] text-slate-900 capitalize">
             {row.original.fullName || row.original.name || row.original.userName}
           </span>
-          <ClickToCopy text={row.original.userId} className="text-[11px] text-slate-500 mt-0.5">
+          <ClickToCopy text={row.original.userName} className="text-[11px] text-slate-500 mt-0.5">
             ({row.original.userName})
           </ClickToCopy>
         </div>
@@ -249,8 +255,8 @@ export default function CommissionWiseReportPage() {
       header: "SERVICE",
       center: true,
       cell: ({ row }) => (
-        <span className="text-slate-600 font-medium whitespace-nowrap text-[13px] uppercase">
-          {row.getValue("serviceType")}
+        <span className="text-[11px] whitespace-nowrap">
+          {ServiceLabel(row.getValue("serviceType"))}
         </span>
       ),
     },

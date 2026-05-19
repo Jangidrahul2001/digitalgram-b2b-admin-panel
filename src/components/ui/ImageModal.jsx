@@ -95,7 +95,7 @@ const ImageModal = ({ images = [], isOpen, onClose }) => {
                           >
                             <div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center bg-slate-50">
                               {isPdf ? (
-                                <div className="flex flex-col items-center justify-center text-[10px] font-black text-slate-400 uppercase tracking-tighter">
+                                <div className="flex flex-col items-center justify-center text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                                   <span className="text-[8px] opacity-60">DOC</span>
                                   PDF
                                 </div>
@@ -119,7 +119,7 @@ const ImageModal = ({ images = [], isOpen, onClose }) => {
                     <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-500">
                       <X className="w-6 h-6" strokeWidth={1.5} />
                     </div>
-                    <p className="text-[11px] font-black uppercase tracking-widest italic">Document not found</p>
+                    <p className="text-[11px] font-bold uppercase tracking-widest italic">Document not found</p>
                   </div>
                 </div>
               )}

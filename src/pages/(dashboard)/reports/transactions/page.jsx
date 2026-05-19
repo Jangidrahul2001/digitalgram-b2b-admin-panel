@@ -73,8 +73,15 @@ export default function AllTransactions() {
       onSuccess: (data) => {
         if (data.success) {
           console.log(data);
-          setTransactions(data.data || []);
+          setTransactions(data?.data || []);
           setIsLoading(false)
+          if (data?.data?.length > 0) {
+            toast.success(data?.message || "Transaction(s) found")
+          }
+          else {
+            toast.error(data?.message || "No transactions found with this reference ID")
+          }
+
         }
       },
       onError: (error) => {
@@ -96,6 +103,7 @@ export default function AllTransactions() {
   };
 
   const handleSearch = () => {
+    if (searchTerm === "") return
     setIsLoading(true)
     fetchTransactions()
 
@@ -107,7 +115,7 @@ export default function AllTransactions() {
   const TransactionCard = ({ txn, index }) => {
     const status = txn?.entryType?.toLowerCase() || txn?.status?.toLowerCase() || "pending";
     const config = {
-      refund:{ bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/50", dot: "bg-amber-500", label: "REFUND" },
+      refund: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/50", dot: "bg-amber-500", label: "REFUND" },
       charge: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/50", dot: "bg-rose-500", label: "CHARGE" },
       commission: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/50", dot: "bg-emerald-500", label: "COMMISSION" },
       success: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/50", dot: "bg-emerald-500", label: "SUCCESS" },
@@ -130,15 +138,15 @@ export default function AllTransactions() {
             {/* Top row: Status & ID */}
             <div className="flex flex-wrap items-center space-x-2 space-y-2">
               <span className={cn(
-                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all",
+                "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all",
                 config.bg, config.text, config.border
               )}>
                 {config.label}
               </span>
-              <span className="px-3.5 py-1.5 rounded-full bg-slate-50 text-[10px] font-black text-slate-500 border border-slate-200 font-mono tracking-widest">
+              <span className="px-3.5 py-1.5 rounded-full bg-slate-50 text-[10px] font-bold text-slate-500 border border-slate-200 font-mono tracking-widest">
                 ID: {txn.referenceId || ""}
               </span>
-              <span className="px-3.5 py-1.5 rounded-full bg-slate-50 text-[10px] font-black text-slate-600 border border-slate-100/50 flex items-center gap-2 uppercase tracking-widest">
+              <span className="px-3.5 py-1.5 rounded-full bg-slate-50 text-[10px] font-bold text-slate-600 border border-slate-100/50 flex items-center gap-2 uppercase tracking-widest">
                 <Calendar size={12} className="text-slate-300" />
                 {formatDate(txn.createdAt)}
               </span>
@@ -149,7 +157,7 @@ export default function AllTransactions() {
           {/* Right Section: Status & Amount */}
           <div className="flex flex-col items-end  md:min-w-[140px]">
 
-            <h3 className="text-[28px] font-black text-slate-900 tracking-tight leading-none mt-2 tabular-nums">
+            <h3 className="text-[28px] font-bold text-slate-900 tracking-tight leading-none mt-2 tabular-nums">
               {formatToINR(txn.amount || 0)}
             </h3>
           </div>
@@ -159,7 +167,7 @@ export default function AllTransactions() {
         <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-5 mt-8">
           {/* Service  Details */}
           <div className="bg-gradient-to-br from-indigo-50/80 to-white border border-indigo-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-indigo-100/20">
-            <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(79,70,229,0.3)]" />
               Service Details
             </h4>
@@ -182,7 +190,7 @@ export default function AllTransactions() {
           </div>
           {/* Merchant Details */}
           <div className="bg-gradient-to-br from-indigo-50/80 to-white border border-indigo-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-indigo-100/20">
-            <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h4 className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(79,70,229,0.3)]" />
               Merchant Details
             </h4>
@@ -206,7 +214,7 @@ export default function AllTransactions() {
 
 
           <div className="bg-gradient-to-br from-emerald-50/80 to-white border border-emerald-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-emerald-100/20">
-            <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h4 className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
               Request Details
             </h4>
@@ -265,26 +273,26 @@ export default function AllTransactions() {
 
 
           {/* <div className="bg-gradient-to-br from-sky-50/80 to-white border border-sky-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-sky-100/20">
-            <h4 className="text-[10px] font-black text-sky-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h4 className="text-[10px] font-bold text-sky-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
               Bank UTR
             </h4>
             <div className="h-[60px] flex flex-col justify-center">
-              <p className="text-[15px] font-black text-slate-900 tracking-wider font-mono">{txn.utr || txn.bankUtr || "---"}</p>
+              <p className="text-[15px] font-bold text-slate-900 tracking-wider font-mono">{txn.utr || txn.bankUtr || "---"}</p>
               <p className="text-[9px] font-bold text-sky-500 uppercase tracking-widest mt-1">Network Ref</p>
             </div>
           </div> */}
 
           {/* Remark */}
           <div className="bg-gradient-to-br from-amber-50/80 to-white border border-amber-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-amber-100/20">
-            <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <h4 className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]" />
               Remark
             </h4>
             <div className="h-[60px] flex flex-col justify-center">
               <p className={cn(
                 "text-[12px] font-bold leading-relaxed",
-                txn.error ? "text-rose-600 font-black" : "text-amber-700"
+                txn.error ? "text-rose-600 font-bold" : "text-amber-700"
               )}>
                 {txn.description || "Process completed successfully."}
               </p>
@@ -320,17 +328,17 @@ export default function AllTransactions() {
           <div className="relative z-10 flex flex-col gap-5">
             {/* Header: Title and Sub-label */}
             <div className="flex flex-col gap-1">
-              <h2 className="text-xl font-black text-slate-900 tracking-tight leading-none uppercase">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight leading-none uppercase">
                 Find Transactions
               </h2>
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                 SEARCH ANYTHING
               </p>
             </div>
 
             {/* Input Row: Label + Input + Actions */}
             <div className="space-y-2">
-              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 opacity-60">
+              <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest ml-1 opacity-60">
                 SEARCH
               </label>
 
@@ -356,8 +364,8 @@ export default function AllTransactions() {
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={handleSearch}
-
-                    className="h-11 px-8 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 shadow-lg shadow-gray-600/20 active:scale-95 transition-all flex items-center gap-3 rounded-2xl border-none min-w-[140px]"
+                    disabled={searchTerm === ""}
+                    className="h-11 px-8 bg-gray-900 text-white font-bold text-[10px] uppercase tracking-widest hover:bg-gray-800 shadow-lg shadow-gray-600/20 active:scale-95 transition-all flex items-center gap-3 rounded-2xl border-none min-w-[140px]"
                   >
                     <Search size={14} className="stroke-[3px]" />
                     SEARCH
@@ -384,7 +392,7 @@ export default function AllTransactions() {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-dashed border-slate-200">
                 <div className="w-12 h-12 rounded-full border-4 border-slate-100 border-t-slate-600 animate-spin mb-4" />
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Synchronizing Data...</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Synchronizing Data...</p>
               </div>
             ) : transactions.length > 0 ? (
               transactions.map((txn, idx) => (

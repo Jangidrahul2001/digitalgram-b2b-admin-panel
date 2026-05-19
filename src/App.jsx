@@ -81,11 +81,12 @@ import PageNotFound from "./pages/(auth)/PageNotFound";
 import { PermissionCheck } from "./pages/(auth)/PermissionCheck";
 import NoPermission from "./pages/(auth)/NoPermission";
 import { setNavigateFunction } from "./api/api";
+import CommingSoonPage from "./pages/(dashboard)/CommingSoonPage";
 
 // Component to handle navigate function setup
 const NavigateSetup = () => {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     setNavigateFunction(navigate);
   }, [navigate]);
@@ -107,7 +108,7 @@ const ProtectedRoute = ({ children }) => {
   }
   return (
     <PermissionCheck>
-      {children};
+      {children}
     </PermissionCheck>)
 };
 
@@ -199,11 +200,15 @@ export default function App() {
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/commission" element={<Commission />} />
               <Route path="/content" element={<Content />} />
-              <Route path="/notifications" element={<Notifications />} />
+              {/* <Route path="/notifications" element={<Notifications />} /> */}
+              <Route path="/notifications" element={<CommingSoonPage title={"Notifications"} subtitle={"This feature is under development."} />} />
+
               <Route path="/package" element={<Package />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/ecommerce" element={<EcommercePage />} />
+
+              {/* <Route path="/ecommerce" element={<EcommercePage />} /> */}
+              <Route path="/ecommerce" element={<CommingSoonPage title={"E-Commerce"} subtitle={"This feature is under development."} />} />
               <Route path="/coupon" element={<CouponPage />} />
               <Route path="/employees" element={<EmployeesPage />} />
               <Route path="/support" element={<SupportPage />} />

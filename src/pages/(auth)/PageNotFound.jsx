@@ -34,8 +34,8 @@ const PageNotFound = () => {
           className="mt-8 sm:mt-12 text-center space-y-4 sm:space-y-6"
         >
           <div className="space-y-2 sm:space-y-4">
-          
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight uppercase leading-tight">
+
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase leading-tight">
               Page <span className="text-slate-500">Not Found</span>
             </h2>
             <p className="text-slate-500 text-xs sm:text-sm font-medium max-w-[280px] sm:max-w-md mx-auto leading-relaxed">

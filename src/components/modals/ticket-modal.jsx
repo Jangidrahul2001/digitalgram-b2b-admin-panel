@@ -85,14 +85,14 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
               <div className="px-8 pt-8 pb-6 flex items-start justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] bg-amber-50 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.2em] bg-amber-50 px-2 py-0.5 rounded-md">
                       Support Ticket
                     </span>
                     <span className="text-[10px] font-bold text-slate-400 font-mono">
                       #{ticket?.ticketId}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                  <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
                     Request Details
                   </h3>
                 </div>
@@ -111,7 +111,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-slate-400">
                       <Hash className="w-3.5 h-3.5" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Service Node</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Service Node</span>
                     </div>
                     <p className="text-[14px] font-bold text-slate-900 pl-5 uppercase tracking-tight">
                       {ticket?.serviceName || "N/A"}
@@ -121,7 +121,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-slate-400">
                       <Activity className="w-3.5 h-3.5" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Resolution</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Resolution</span>
                     </div>
                     <div className="pl-5">
                       {displayStatus(ticket?.status)}
@@ -131,7 +131,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-slate-400">
                       <CreditCard className="w-3.5 h-3.5" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Ref ID</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Ref ID</span>
                     </div>
                     <p className="text-[13px] font-bold text-slate-500 font-mono pl-5 truncate" title={ticket?.transactionId}>
                       {ticket?.transactionId || "N/A"}
@@ -141,7 +141,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-slate-400">
                       <Calendar className="w-3.5 h-3.5" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Logged At</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Logged At</span>
                     </div>
                     <p className="text-[13px] font-bold text-slate-900 pl-5">
                       {formatDate(ticket?.createdAt) || "N/A"}
@@ -153,7 +153,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-slate-400">
                     <MessageSquare className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">User Message</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">User Message</span>
                   </div>
                   <div className="relative group pl-5">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-100 rounded-full group-hover:bg-amber-200 transition-colors"></div>
@@ -166,7 +166,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-slate-400">
                     <MessageSquare className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Admin Remark</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Admin Remark</span>
                   </div>
                   <div className="relative group pl-5">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-100 rounded-full group-hover:bg-amber-200 transition-colors"></div>
@@ -184,7 +184,7 @@ export function TicketModal({ isOpen, onClose, ticketId }) {
                 </span>
                 <button
                   onClick={onClose}
-                  className="px-8 py-3 bg-slate-900 hover:bg-black text-white text-[12px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-slate-900/10 transition-all active:scale-95 cursor-pointer leading-none"
+                  className="px-8 py-3 bg-slate-900 hover:bg-black text-white text-[12px] font-bold uppercase tracking-widest rounded-2xl shadow-lg shadow-slate-900/10 transition-all active:scale-95 cursor-pointer leading-none"
                 >
                   Close
                 </button>

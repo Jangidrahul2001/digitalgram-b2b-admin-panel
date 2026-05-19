@@ -179,7 +179,7 @@ export default function ProfilePage() {
 
             <div className="flex-1 pb-2 text-center md:text-left md:pl-2">
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-5 mb-4">
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 drop-shadow-sm flex flex-wrap items-center gap-4">
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 drop-shadow-sm flex flex-wrap items-center gap-4">
                   {profileData?.name || "Admin User"}
                 </h1>
               </div>
@@ -212,13 +212,13 @@ export default function ProfilePage() {
           {/* Profile Form */}
           <BentoCard className="p-0 overflow-hidden">
             <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="text-lg font-black text-slate-900">Personal Profile</h2>
+              <h2 className="text-lg font-bold text-slate-900">Personal Profile</h2>
               <p className="text-xs text-slate-500">Update your identity and contact information.</p>
             </div>
             <CardContent className="p-6 md:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Display Name</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Display Name</label>
                   <div className="relative group">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                     <Input
@@ -232,7 +232,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Phone Number</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Phone Number</label>
                   <div className="relative group">
                     <Smartphone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                     <Input
@@ -247,7 +247,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Email Address</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Email Address</label>
                 <div className="relative group">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                   <Input
@@ -261,7 +261,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Professional Bio</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Professional Bio</label>
                 <textarea
                   onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                   value={profileData?.bio || ""}
@@ -275,13 +275,13 @@ export default function ProfilePage() {
           {/* Security Form */}
           <BentoCard className="p-0 overflow-hidden">
             <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="text-lg font-black text-slate-900">Security & Credentials</h2>
+              <h2 className="text-lg font-bold text-slate-900">Security & Credentials</h2>
               <p className="text-xs text-slate-500">Regularly update your password to maintain security.</p>
             </div>
             <CardContent className="p-6 md:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Current Password</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Current Password</label>
                   <div className="relative group">
                     <Lock className="absolute left-3.5 top-4.5 md:top-5 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                     <Input
@@ -296,7 +296,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">New Secure Password</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">New Secure Password</label>
                   <div className="relative group">
                     <Lock className="absolute left-3.5 top-4.5 md:top-5 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                     <Input
@@ -329,7 +329,7 @@ export default function ProfilePage() {
         <div className="space-y-6">
           <BentoCard className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs md:text-md">Quick Stats</h3>
+              <h3 className="font-bold text-slate-900 uppercase tracking-widest text-xs md:text-md">Quick Stats</h3>
               <Settings2 className="w-4 h-4 text-slate-400 cursor-pointer" />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -343,10 +343,10 @@ export default function ProfilePage() {
                 return (
                   <div key={i} className={cn("p-4 rounded-2xl border border-slate-100 transition-all shadow-sm cursor-default group/item", stat.bg)}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className={cn("text-[9px] font-black text-slate-400 uppercase tracking-widest")}>{stat.label}</p>
+                      <p className={cn("text-[9px] font-bold text-slate-400 uppercase tracking-widest")}>{stat.label}</p>
                       <StatIcon className="w-3 h-3 text-slate-300 group-hover/item:text-slate-900 transition-colors" />
                     </div>
-                    <p className={cn("text-lg font-black tracking-tight", stat.color)}>{stat.val}</p>
+                    <p className={cn("text-lg font-bold tracking-tight", stat.color)}>{stat.val}</p>
                   </div>
                 );
               })}
@@ -365,9 +365,9 @@ export default function ProfilePage() {
             </div>
             <div className="relative pt-2">
               <div className="flex mb-3 items-center justify-between">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Health Level</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Health Level</p>
                 <div className="text-right">
-                  <span className="text-xs font-black inline-block text-emerald-600 px-2.5 py-0.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                  <span className="text-xs font-bold inline-block text-emerald-600 px-2.5 py-0.5 rounded-lg bg-emerald-50 border border-emerald-100">
                     85%
                   </span>
                 </div>
@@ -392,7 +392,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">Notifications</h3>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">Email Alerts</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Email Alerts</p>
                   </div>
                 </div>
                 <MechanicalToggle defaultChecked />
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">Visibility</h3>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">Public Profile</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Public Profile</p>
                   </div>
                 </div>
                 <MechanicalToggle />

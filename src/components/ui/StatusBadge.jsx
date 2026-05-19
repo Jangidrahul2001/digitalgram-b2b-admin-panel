@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
-import { CheckCircle2, XCircle, Clock, Info, ShieldCheck, AlertCircle, CircleDashed } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Info, ShieldCheck, AlertCircle, CircleDashed, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 
 const StatusBadge = ({ status, className }) => {
   const normalizedStatus = status?.toUpperCase() || '';
@@ -18,6 +18,26 @@ const StatusBadge = ({ status, className }) => {
         return {
           style: 'bg-emerald-50 text-emerald-600 border-emerald-200',
           icon: <CheckCircle2 className="h-3.5 w-3.5 stroke-[2px]" />
+        };
+      case 'CREDIT':
+        return {
+          style: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+          // icon: <ArrowUpRight className="h-3.5 w-3.5 stroke-[2px]" />
+        };
+      case 'DEBIT':
+        return {
+          style: 'bg-rose-50 text-rose-600 border-rose-200',
+          // icon: <ArrowDownLeft className="h-3.5 w-3.5 stroke-[2px]" />
+        };
+      case 'HOLD':
+        return {
+          style: 'bg-amber-50 text-amber-600 border-amber-200',
+          icon: <Clock className="h-3.5 w-3.5 stroke-[2px]" />
+        };
+      case 'RELEASE':
+        return {
+          style: 'bg-blue-50 text-blue-600 border-blue-200',
+          icon: <Unlock className="h-3.5 w-3.5 stroke-[2px]" />
         };
 
       case 'VERIFIED':

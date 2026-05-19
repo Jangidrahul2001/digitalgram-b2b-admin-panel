@@ -151,7 +151,7 @@ export default function UpgradeUserPage() {
                         className={`p-2.5 px-3 rounded-2xl cursor-pointer border transition-all duration-300 flex items-center justify-between group ${isSelected ? 'bg-slate-900 border-slate-900 shadow-sm shadow-slate-900/20' : 'bg-white border-transparent hover:bg-white hover:border-slate-100 hover:shadow-sm'}`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-bold ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
                             {(user.fullName || "U").charAt(0).toUpperCase()}
                           </div>
                           <div>

@@ -17,7 +17,9 @@ import { useFetch } from "../../../hooks/useFetch";
 import { apiEndpoints } from "../../../api/apiEndpoints";
 import {
   formatDate,
+  formatDateForBackend,
   handleValidationError,
+  ServiceLabel,
 } from "../../../utils/helperFunction";
 import { usePatch } from "../../../hooks/usePatch";
 import { toast } from "sonner";
@@ -56,18 +58,21 @@ export default function SupportPage() {
 
   // Fetch Services for dropdown
   const { refetch: fetchServices } = useFetch(
-    apiEndpoints.fetchServices,
+    apiEndpoints.fetchServicesWithPipeline,
     {
       onSuccess: (data) => {
+        console.log(data)
         if (data?.success && data?.data) {
           const options = [{ label: "All Services", value: "all" }];
-          data?.data?.forEach((service) => {
-            options.push({
-              label: service.name,
-              shortLabel: service.name,
-              value: service.name
-            });
-          });
+          data?.data?.forEach((service) =>
+            service.pipeline?.map((pipeline) => {
+              options.push({
+                label: ServiceLabel(pipeline?.code),
+                value: pipeline?.code
+              });
+            }))
+
+
           setServiceList(options);
         }
       },
@@ -89,8 +94,8 @@ export default function SupportPage() {
 
     if (selectedService && selectedService !== "all") url += `&serviceName=${selectedService}`;
     if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
-    if (dateRange.from) url += `&from=${format(dateRange.from, "yyyy-MM-dd")}`;
-    if (dateRange.to) url += `&to=${format(dateRange.to, "yyyy-MM-dd")}`;
+    if (dateRange.from) url += `&from=${formatDateForBackend(dateRange.from)}`;
+    if (dateRange.to) url += `&to=${formatDateForBackend(dateRange.to)}`;
 
     return url;
   };
@@ -115,7 +120,7 @@ export default function SupportPage() {
   );
 
   const { refetch: fetchSupportStats } = useFetch(
-    `${apiEndpoints.fetchSupportStats}`,
+    `${apiEndpoints.fetchSupportStats}?serviceName=${selectedService}&from=${formatDateForBackend(dateRange.from)}&to=${formatDateForBackend(dateRange.to)}`,
     {
       onSuccess: (data) => {
         if (data?.success && data?.data) {
@@ -155,6 +160,7 @@ export default function SupportPage() {
 
   useEffect(() => {
     fetchSupportTickets();
+    fetchSupportStats();
   }, [pageIndex, pageSize, searchQuery, selectedService, selectedStatus, dateRange]);
 
   const handlePageChange = (newPageIndex, newPageSize) => {
@@ -207,7 +213,7 @@ export default function SupportPage() {
         center: true,
         cell: ({ row }) => (
           <div className="flex justify-center">
-            <span className="text-slate-900 font-bold text-[13px]">{row.getValue("serviceName")}</span>
+            <span className="text-slate-900 font-bold text-[13px]">{ServiceLabel(row.getValue("serviceName"))}</span>
           </div>
         ),
       },
@@ -334,7 +340,7 @@ export default function SupportPage() {
       actions={
         <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 sm:gap-3 w-full xl:w-auto">
           {/* Service Dropdown */}
-          <div className="flex-1 md:w-full lg:flex-1 xl:flex-initial min-w-[140px] xl:min-w-[160px]">
+          {/* <div className="flex-1 md:w-full lg:flex-1 xl:flex-initial min-w-[140px] xl:min-w-[160px]">
             <Select
               placeholder="Select service"
               options={serviceList}
@@ -342,7 +348,7 @@ export default function SupportPage() {
               onChange={setSelectedService}
               className="h-9 md:h-10 bg-white! border-slate-200 rounded-xl shadow-xs text-slate-700 font-medium w-full text-[12px]"
             />
-          </div>
+          </div> */}
 
           {/* Status Dropdown */}
           <div className="flex-1 md:w-full lg:flex-1 xl:flex-initial min-w-[130px] xl:min-w-[140px]">
