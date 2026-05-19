@@ -232,7 +232,7 @@ export default function LoginPage() {
               {/* Password Input */}
               <div className="relative group">
                 <Input
-                  placeholder="Passcode"
+                  placeholder="Password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(InputSlice(e.target.value, 50))}

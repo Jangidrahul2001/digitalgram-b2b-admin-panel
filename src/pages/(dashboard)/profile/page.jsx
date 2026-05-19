@@ -44,9 +44,7 @@ export default function ProfilePage() {
   const { data: profile, loading } = useSelector((state) => state.profile);
   const [profileData, setProfileData] = useState(profile || {});
 
-  useEffect(() => {
-    dispatch(fetchProfile());
-  }, [dispatch]);
+
 
   useEffect(() => {
     if (profile) {
