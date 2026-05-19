@@ -53,61 +53,7 @@ import { Card } from "../../../../components/ui/card";
 import { formatDate, formatToINR, handleValidationError } from "../../../../utils/helperFunction";
 import { DataTable } from "../../../../components/tables/data-table";
 
-const TXN_DATA = {
-  id: "8",
-  amount: 948.00,
-  status: "FAILED",
-  txnType: "REFUND",
-  serviceCategory: "UTILITY BILLS",
-  date: "2026-03-10 10:05:57",
-  details: {
-    user: "camlenio software (ID: )",
-    txnType: "REFUND",
-    service: "BBPS_JVVNL0000RAJ01",
-    amount: 948.00,
-    openingBalance: 2109.61,
-    closingBalance: 3057.61,
-    commission: 0.25,
-    charges: 0.00,
-    gst: 0.00,
-    tds: 0.00,
-    netAmount: 0.00,
-    referenceId: "FUTS98DRD351O27C7Z570XM14V482611025",
-    clientRefId: "N/A",
-    utrNumber: "N/A",
-    refund: "YES",
-    remark: "BBPS Failed Refund",
-    message: "Failed"
-  },
-  bbpsDetails: {
-    txnRef: "REF-008123",
-    requestId: "FUTS98DRD351O27C7Z570XM14V482611025",
-    billerId: "JVVNL0000RAJ01",
-    billAmount: 948.00,
-    finalAmount: 0.00,
-    status: "FAILED",
-    error: "Provider Timeout"
-  },
-  flow: [
-    { label: "Request Processed", status: "success", time: "10:05:50 AM" },
-    { label: "Wallet Debited", status: "success", time: "10:05:52 AM" },
-    { label: "Provider Timeout", status: "error", time: "10:05:57 AM" },
-    { label: "Auto Refund Done", status: "success", time: "10:05:59 AM" }
-  ],
-  apiRequest: {
-    plainText: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<billPaymentRequest>\r\n  <agentId>CC01RP68AGTBAA004669</agentId>\r\n  <billerAdhoc>true</billerAdhoc>\r\n  <agentDeviceInfo>\r\n  <requestId>FUTS98DRD351O27C7Z570XM14V482611025</requestId>\r\n</billPaymentRequest>",
-    requestId: "FUTS98DRD351O27C7Z570XM14V482611025"
-  },
-  apiResponse: {
-    responsecode: "204",
-    errorInfo: {
-      error: {
-        errorcode: "E210",
-        errormessage: "No fetch data found for given ref id."
-      }
-    }
-  }
-}
+
 
 
 // --- Skeleton Components ---
@@ -153,7 +99,7 @@ const DetailItem = ({ label, value, icon: Icon, color = "indigo" }) => {
         <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
       </div>
       <div className="flex flex-col min-w-0 text-left">
-        <span className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{label}</span>
+        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">{label}</span>
         <span className="text-[10px] sm:text-[12px] font-bold text-slate-800 tracking-tight truncate">{value}</span>
       </div>
     </div>
@@ -176,10 +122,10 @@ const MetricCard = ({ label, value, subLabel, icon: Icon, variant = "blue" }) =>
       <div className="relative z-10 space-y-3">
         <div className="flex items-center gap-2 opacity-80">
           <Icon className="w-3 h-3 text-white" />
-          <p className="text-[9px] font-black uppercase tracking-[0.2em]">{label}</p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em]">{label}</p>
         </div>
         <div className="text-left">
-          <h3 className="text-xl font-black tracking-tighter tabular-nums leading-none mb-1">{value}</h3>
+          <h3 className="text-xl font-bold tracking-tighter tabular-nums leading-none mb-1">{value}</h3>
           <p className="text-[9px] font-bold opacity-70 uppercase tracking-widest line-clamp-1">{subLabel}</p>
         </div>
       </div>
@@ -390,8 +336,8 @@ export default function TransactionDetailPage() {
         <div className="h-20 w-20 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-300 mb-6 border border-slate-100 rotate-45">
           <Layers className="w-10 h-10 -rotate-45" />
         </div>
-        <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">No Data Found</h2>
-        <Button onClick={() => navigate(-1)} className="mt-8 rounded-xl h-11 px-8 bg-[#2f35cd] text-white font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all">Recall</Button>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight uppercase">No Data Found</h2>
+        <Button onClick={() => navigate(-1)} className="mt-8 rounded-xl h-11 px-8 bg-[#2f35cd] text-white font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all">Recall</Button>
       </div>
     );
   }
@@ -532,7 +478,7 @@ export default function TransactionDetailPage() {
     //   <div className="flex items-center gap-3">
     //     {
     //       !["pending", "failed"].includes(data.txnStatus) &&
-    //       <Button onClick={handleReceiptOpen} className="rounded-lg h-9 px-6 bg-[#2f35cd] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-500/10 active:scale-95 transition-all">
+    //       <Button onClick={handleReceiptOpen} className="rounded-lg h-9 px-6 bg-[#2f35cd] text-white font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-500/10 active:scale-95 transition-all">
     //         <Receipt className="w-3.5 h-3.5 mr-2" /> Receipt
     //       </Button>
     //     }
@@ -564,7 +510,7 @@ export default function TransactionDetailPage() {
                   <Microscope className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Transaction Audit</h3>
+                  <h3 className="text-[12px] font-bold text-slate-900 uppercase tracking-widest">Transaction Audit</h3>
                   <p className="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest text-left">Verified Log Information</p>
                 </div>
               </div>
@@ -684,7 +630,7 @@ export default function TransactionDetailPage() {
 
                     <div className="flex items-center gap-3 px-1">
                       <div className="h-6 w-1.5 bg-indigo-600 rounded-full" />
-                      <h2 className="text-[13px] font-black text-slate-900 uppercase tracking-[0.2em] leading-none">
+                      <h2 className="text-[13px] font-bold text-slate-900 uppercase tracking-[0.2em] leading-none">
                         Mini Statement
                       </h2>
                     </div>
@@ -715,12 +661,12 @@ export default function TransactionDetailPage() {
                     <div className="h-2 w-2 rounded-full bg-slate-200" />
                     <div className="h-2 w-2 rounded-full bg-slate-200" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 ml-2 flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-600 ml-2 flex items-center gap-2">
                     <Globe size={12} className="animate-pulse" /> Diagnostic Request
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(data.request)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(data.request)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-bold uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
                     <Copy size={11} /> Copy Payload
                   </motion.button>
                 </div>
@@ -742,12 +688,12 @@ export default function TransactionDetailPage() {
                     <div className="h-2 w-2 rounded-full bg-slate-200" />
                     <div className="h-2 w-2 rounded-full bg-slate-200" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-rose-600 ml-2 flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-rose-600 ml-2 flex items-center gap-2">
                     <Activity size={12} /> Server Response
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(data.response)} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(data.response)} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-bold uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
                     <Copy size={11} /> Copy JSON
                   </motion.button>
                 </div>
@@ -765,7 +711,7 @@ export default function TransactionDetailPage() {
         {/* --- SYSTEM FOOTER --- */}
         <div className="flex flex-col items-center gap-4 py-8 opacity-20 no-print">
           <div className="h-px w-12 bg-slate-500" />
-          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Secure Access Point</p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400">Secure Access Point</p>
         </div>
 
         {/* <AnimatePresence>

@@ -27,6 +27,8 @@ import ClickToCopy from "../../../../components/ui/ClickToCopy";
 import StatusBadge from "../../../../components/ui/StatusBadge";
 import { ActionButtons } from "../../../../components/ui/ActionButtons";
 
+
+
 const StatCard = ({ label, count, amount, type, icon: Icon, subLabel1, subLabel2 }) => {
 
   const styles = {
@@ -55,12 +57,12 @@ const StatCard = ({ label, count, amount, type, icon: Icon, subLabel1, subLabel2
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">{subLabel1 || "Total Count"}</span>
-              <span className={cn("text-lg font-black truncate ", styles.text)} title={count}>{count}</span>
+              <span className={cn("text-lg font-bold truncate ", styles.text)} title={count}>{count}</span>
             </div>
             <div className="flex items-center justify-between pt-1">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">{subLabel2 || "Total Amount"}</span>
               <span
-                className={cn("text-lg font-black truncate", styles.text)}
+                className={cn("text-lg font-bold truncate", styles.text)}
                 title={amount}
               >
                 {amount}
@@ -71,7 +73,7 @@ const StatCard = ({ label, count, amount, type, icon: Icon, subLabel1, subLabel2
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between border-b border-transparent pb-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">{subLabel1 || "Total Earned"}</span>
-              <span className={cn("text-2xl font-black", styles.text)}>{count}</span>
+              <span className={cn("text-2xl font-bold", styles.text)}>{count}</span>
             </div>
           </div>
         )}
@@ -109,6 +111,7 @@ export default function ServiceWiseReportPage() {
   const [totalRecords, setTotalRecords] = useState(0)
 
   // Filter states
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedUser, setSelectedUser] = useState("");
   const [search, setSearch] = useState("");
 
@@ -130,6 +133,12 @@ export default function ServiceWiseReportPage() {
   const service = new URLSearchParams(location.search).get("service");
   const pipeline = new URLSearchParams(location.search).get("pipeline");
   const apiKey = `${service}-${pipeline}`
+  const statusOptions = [
+    { label: "All Status", value: "" },
+    { label: "Success", value: "success" },
+    { label: "Pending", value: "pending" },
+    { label: "Failed", value: "failed" },
+  ]
 
 
   // Build query parameters
@@ -138,9 +147,11 @@ export default function ServiceWiseReportPage() {
       page: currentPage,
       limit: pageSize,
     };
+    if (search) params.search = search;
 
     if (date?.from) params.from = format(date.from, "yyyy-MM-dd");
     if (date?.to) params.to = format(date.to, "yyyy-MM-dd");
+    if (selectedStatus) params.status = selectedStatus;
     if (!selectedUser || selectedUser === "all") {
       params.userId = "";
     } else {
@@ -148,7 +159,7 @@ export default function ServiceWiseReportPage() {
     }
 
     return params;
-  }, [currentPage, pageSize, selectedUser, date]);
+  }, [currentPage, pageSize, selectedUser, date, search, selectedStatus]);
 
 
 
@@ -182,7 +193,7 @@ export default function ServiceWiseReportPage() {
     refetch,
     isLoading: reportLoading
   } = useFetch(
-    apiEndpoints?.[apiKeys?.[apiKey]],
+    `${apiEndpoints?.[apiKeys?.[apiKey]]}`,
     {
       onSuccess: (data) => {
         if (data?.success && data?.data) {
@@ -190,8 +201,12 @@ export default function ServiceWiseReportPage() {
           setTotalRecords(data?.pagination?.total || 0)
         }
       },
-      onError: (error) =>
-        console.error("Failed to fetch service report:", error),
+      onError: (error) => {
+        setReportsData([])
+        setTotalRecords(0)
+        toast.error(handleValidationError(error) || "Failed to fetch report data");
+        console.error("Failed to fetch service report:", error)
+      }
     },
     false,
     true,
@@ -225,11 +240,11 @@ export default function ServiceWiseReportPage() {
       const params = buildQueryParams();
       refetch(params);
     }
-  }, [service, buildQueryParams, refetch]);
+  }, [service, buildQueryParams, refetch, search]);
 
   // Process users data for dropdown
   const userOptions = useMemo(() => {
-    const allUserOption = { label: "All Users", shortLabel: "All Users", value: "all" };
+    const allUserOption = { label: "All Users", shortLabel: "All Users", value: "" };
 
     if (usersData?.success && usersData?.data) {
       return [
@@ -266,6 +281,18 @@ export default function ServiceWiseReportPage() {
 
   const filterActions = (
     <div className="flex flex-wrap items-center gap-3">
+      <div className="w-[180px]">
+        <Select
+          placeholder="Select Status"
+          options={statusOptions}
+          value={selectedStatus}
+          onChange={(val) => {
+            setSelectedStatus(val);
+            setCurrentPage(1);
+          }}
+          className="h-9 md:h-10 border-slate-200 rounded-xl text-sm font-bold"
+        />
+      </div>
       <div className="w-[180px]">
         <Select
           placeholder="Select User"
@@ -309,7 +336,7 @@ export default function ServiceWiseReportPage() {
         header: "DATE",
         center: true,
         cell: ({ row }) => (
-          <span className="text-slate-600 font-medium whitespace-nowrap">
+          <span className="text-[11px] whitespace-nowrap">
             {formatDate(row.getValue("createdAt"))}
           </span>
         ),
@@ -326,7 +353,7 @@ export default function ServiceWiseReportPage() {
               </span>
               {row.original.kycStatus === "approved" && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
             </div>
-            <ClickToCopy text={row.original.userId} className={"text-[11px] text-slate-500  mt-0.5"}>
+            <ClickToCopy text={row.original.userName} className={"text-[11px] text-slate-500  mt-0.5"}>
 
               ({row.original.userName})
 
@@ -341,7 +368,7 @@ export default function ServiceWiseReportPage() {
           header: "Category",
           center: true,
           cell: ({ row }) => (
-            <span className="text-slate-600 font-medium whitespace-nowrap">
+            <span className="text-[11px] whitespace-nowrap">
               {(row.getValue("category"))}
             </span>
           ),
@@ -352,7 +379,7 @@ export default function ServiceWiseReportPage() {
           header: "Mobile Number",
           center: true,
           cell: ({ row }) => (
-            <span className="text-slate-600 font-medium whitespace-nowrap">
+            <span className=" whitespace-nowrap">
               {(row.getValue("mobileNumber"))}
             </span>
           ),
@@ -362,7 +389,7 @@ export default function ServiceWiseReportPage() {
           header: "Operator Name",
           center: true,
           cell: ({ row }) => (
-            <span className="text-slate-600 font-medium whitespace-nowrap">
+            <span className="text-[11px] whitespace-nowrap">
               {(row.getValue("operatorName"))}
             </span>
           ),
@@ -373,7 +400,7 @@ export default function ServiceWiseReportPage() {
           header: "Category",
           center: true,
           cell: ({ row }) => (
-            <span className="text-slate-600 font-medium whitespace-nowrap">
+            <span className="text-[11px] whitespace-nowrap">
               {(row.getValue("serviceType"))}
             </span>
           ),
@@ -391,6 +418,14 @@ export default function ServiceWiseReportPage() {
         ),
       },
       {
+        accessorKey: "type",
+        header: "TYPE",
+        center: true,
+        cell: ({ row }) => {
+          return row.getValue("type") ? <StatusBadge status={row.getValue("type")?.toLowerCase()} /> : "---";
+        }
+      },
+      {
         accessorKey: "amount",
         header: "TRANSACTION AMOUNT",
         center: true,
@@ -405,17 +440,17 @@ export default function ServiceWiseReportPage() {
         header: "COMMISSION",
         center: true,
         cell: ({ row }) => (
-          <span className="text-slate-500 text-xs font-medium">
+          <span className="">
             {formatToINR(row.getValue("commission"))}
           </span>
         ),
       },
-        {
+      {
         accessorKey: "charge",
         header: "CHARGE",
         center: true,
         cell: ({ row }) => (
-          <span className="text-slate-500 text-xs font-medium">
+          <span className="">
             {formatToINR(row.getValue("charge"))}
           </span>
         ),
@@ -425,7 +460,7 @@ export default function ServiceWiseReportPage() {
         header: "GST",
         center: true,
         cell: ({ row }) => (
-          <span className="text-slate-500 text-xs font-medium">
+          <span className="">
             {formatToINR(row.getValue("gst") || row.original.gstAmount)}
           </span>
         ),
@@ -436,8 +471,18 @@ export default function ServiceWiseReportPage() {
         header: "TDS",
         center: true,
         cell: ({ row }) => (
-          <span className="text-slate-500 text-xs font-medium">
+          <span className="">
             {formatToINR(row.getValue("tds"))}
+          </span>
+        ),
+      },
+       {
+        accessorKey: "totalDebit",
+        header: "Net Amount",
+        center: true,
+        cell: ({ row }) => (
+          <span className="">
+            {formatToINR(row.getValue("totalDebit"))}
           </span>
         ),
       },

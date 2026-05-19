@@ -39,7 +39,7 @@ const NoPermission = () => {
                             <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />
                             <div className="h-px w-6 sm:w-12 bg-rose-200/50" />
                         </div>
-                        <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight uppercase leading-tight">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase leading-tight">
                             Restricted <span className="text-rose-500">Access</span>
                         </h2>
                         <p className="text-slate-500 text-xs sm:text-sm font-medium max-w-[280px] sm:max-w-md mx-auto leading-relaxed">

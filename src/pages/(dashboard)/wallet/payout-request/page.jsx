@@ -33,7 +33,7 @@ import { useFetch } from "../../../../hooks/useFetch";
 import { usePatch } from "../../../../hooks/usePatch";
 import { PayoutBankRequestActionModal } from "../../../../components/modals/PayoutBankRequestActionModal";
 import { toast } from "sonner";
-import { handleValidationError } from "../../../../utils/helperFunction";
+import { formatDate, formatDateForBackend, handleValidationError } from "../../../../utils/helperFunction";
 import { DateRangePicker } from "../../../../components/ui/date-range-picker";
 import { FileImage } from "lucide-react";
 import ImageModal from "../../../../components/ui/ImageModal";
@@ -130,14 +130,14 @@ export default function PayoutBankRequestPage() {
     refetch: refetchPayoutRequest,
   } = useFetch(
     `${apiEndpoints?.aepsPayoutRequest}?search=${searchQuery}&status=${statusFilter || ""}&page=${pageIndex}&limit=${pageSize}${selectedUser && selectedUser !== "" ? `&userId=${selectedUser}` : ""
-    }${date.from ? `&startDate=${format(date.from, "yyyy-MM-dd")}` : ""}${date.to ? `&endDate=${format(date.to, "yyyy-MM-dd")}` : ""
+    }${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""
     }`,
     {
       onSuccess: (data) => {
         if (data?.success && data?.data) {
-        setPayoutRequest(data?.data);
-        setTotalRecords(data?.pagination?.totalRequests);
-        setIsLoading(false);
+          setPayoutRequest(data?.data);
+          setTotalRecords(data?.pagination?.totalRequests);
+          setIsLoading(false);
         }
       },
       onError: (error) => {
@@ -189,6 +189,18 @@ export default function PayoutBankRequestPage() {
         ),
       },
       {
+        accessorKey: "createdAt",
+        header: "Date",
+        headerClassName: "text-center",
+        center: true,
+        cell: ({ row }) => (
+
+          formatDate(row.getValue("createdAt"))
+
+
+        ),
+      },
+      {
         accessorKey: "fullName",
         header: "User Name",
         headerClassName: "text-center",
@@ -200,8 +212,8 @@ export default function PayoutBankRequestPage() {
                 {row.getValue("fullName")}
               </span>
               <ClickToCopy className={"text-[11px] text-slate-400 font-medium tracking-tight cursor-pointer hover:text-slate-600 transition-colors"} text={userName}>
-               {userName || "N/A"}
-              </ClickToCopy>        
+                {userName || "N/A"}
+              </ClickToCopy>
             </div>
           );
         },
@@ -217,10 +229,10 @@ export default function PayoutBankRequestPage() {
               <span className="text-slate-700 font-bold text-[13px]">
                 {row.getValue("bankName")}
               </span>
-              <ClickToCopy  text={accountNumber} className={"text-[11px] text-slate-400 font-mono tracking-tighter uppercase font-medium cursor-pointer hover:text-slate-600 transition-colors"}>
-                  A/c: {accountNumber}
+              <ClickToCopy text={accountNumber} className={"text-[11px] text-slate-400 font-mono tracking-tighter uppercase font-medium cursor-pointer hover:text-slate-600 transition-colors"}>
+                A/c: {accountNumber}
               </ClickToCopy>
-             
+
             </div>
           );
         },
@@ -245,11 +257,11 @@ export default function PayoutBankRequestPage() {
           const ifscCode = row.getValue("ifscCode");
           return (
             <div className="flex justify-center">
-              <ClickToCopy className={"text-slate-600 font-medium bg-slate-50 px-2 py-1 rounded-lg border border-slate-100 text-[12px] font-mono cursor-pointer hover:bg-slate-100 transition-colors cursor-pointer"} text={ifscCode}>
+              <ClickToCopy className={"text-slate-600 font-medium bg-slate-50 px-2 py-1 rounded-lg border border-slate-100 text-[12px] cursor-pointer hover:bg-slate-100 transition-colors"} text={ifscCode}>
                 {ifscCode || "N/A"}
 
               </ClickToCopy>
-             
+
             </div>
           );
         },

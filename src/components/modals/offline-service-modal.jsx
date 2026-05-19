@@ -93,7 +93,7 @@ export function OfflineServiceModal({ isOpen, onClose, serviceId }) {
                 <div className="relative group">
                   <div className="absolute -inset-px rounded-2xl bg-slate-200/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="relative p-5 rounded-2xl bg-white space-y-2">
-                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-1.5 opacity-80">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-1.5 opacity-80">
                       <div className="w-1 h-3 rounded-full bg-orange-200" />
                       Core Identification
                     </label>
@@ -106,13 +106,13 @@ export function OfflineServiceModal({ isOpen, onClose, serviceId }) {
                 <div className="relative group">
                   <div className="absolute -inset-px rounded-2xl bg-emerald-100/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="relative p-5 rounded-2xl bg-emerald-50/10 space-y-2">
-                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-1.5">
                       <div className="w-1 h-3 rounded-full bg-orange-200" />
                       Financial Valuation
                     </label>
                     <div className="flex items-end gap-1">
-                      <span className="text-[14px] font-black text-slate-600 mb-1">₹</span>
-                      <p className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+                      <span className="text-[14px] font-bold text-slate-600 mb-1">₹</span>
+                      <p className="text-2xl font-bold text-slate-900 tracking-tight leading-none">
                         {service?.amount || "0"}
                         <span className="text-slate-400 text-sm font-bold">.00</span>
                       </p>

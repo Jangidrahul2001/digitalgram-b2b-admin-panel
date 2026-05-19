@@ -57,7 +57,9 @@ export default function UsersPage() {
     },
     false, // auto fetch on mount
   );
-
+  useEffect(() => {
+    fetchUsersRequest()
+  }, [filter.status])
   const handleApprove = (request) => {
     setSelectedRequest(request);
     setApproveModalOpen(true);

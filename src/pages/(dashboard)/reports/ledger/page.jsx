@@ -21,14 +21,17 @@ import {
 } from "@/components/icons";
 import {
   formatDate,
+  formatDateForBackend,
   formatToINR,
   handleValidationError,
+  ServiceLabel,
 } from "../../../../utils/helperFunction";
 import { DateRangePicker } from "../../../../components/ui/date-range-picker";
 import ClickToCopy from "../../../../components/ui/ClickToCopy";
 import { ActionButtons } from "../../../../components/ui/ActionButtons";
 import { useNavigate } from "react-router-dom";
 import ExpandableMessage from "../../../../components/ui/ExpandableMessage";
+import StatusBadge from "../../../../components/ui/StatusBadge";
 
 
 
@@ -119,7 +122,7 @@ const StatCard = ({ label, count, amount, type, icon: Icon, subLabel1, subLabel2
     >
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex items-start justify-between mb-4">
-          <span className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 leading-none">
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500 leading-none">
             {label}
           </span>
           <div className={cn(
@@ -136,17 +139,17 @@ const StatCard = ({ label, count, amount, type, icon: Icon, subLabel1, subLabel2
             <>
               <div className="flex items-center justify-between border-b border-slate-200/50 pb-2.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{subLabel1 || "Txn Count"}</span>
-                <span className={cn("text-[17px] font-black leading-none", styles.color)}>{count}</span>
+                <span className={cn("text-[17px] font-bold leading-none", styles.color)}>{count}</span>
               </div>
               <div className="flex items-center justify-between pt-0.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{subLabel2 || "Amount"}</span>
-                <span className={cn("text-[17px] font-black leading-none", styles.color)}>{formatToINR(amount)}</span>
+                <span className={cn("text-[17px] font-bold leading-none", styles.color)}>{formatToINR(amount)}</span>
               </div>
             </>
           ) : (
             <div className="flex items-center justify-between pt-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{subLabel1 || "Value"}</span>
-              <span className={cn("text-2xl font-black leading-none", styles.color)}>
+              <span className={cn("text-2xl font-bold leading-none", styles.color)}>
                 ₹{(count || 0).toLocaleString()}
               </span>
             </div>
@@ -215,7 +218,7 @@ export default function LedgerReportPage() {
   // Fetch ledger data
   const { refetch: refetchLedger } = useFetch(
     `${apiEndpoints.allLedgerEntry}?page=${pageIndex}&limit=${pageSize}${selectedUser && selectedUser !== "" ? `&userId=${selectedUser}` : ""
-    }${date.from ? `&from=${format(date.from, "yyyy-MM-dd")}` : ""}${date.to ? `&to=${format(date.to, "yyyy-MM-dd")}` : ""
+    }${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""
     }${selectedStatus ? `&status=${selectedStatus}` : ""}`,
     {
       onSuccess: (data) => {
@@ -263,9 +266,8 @@ export default function LedgerReportPage() {
         accessorKey: "createdAt",
         center: true,
         cell: ({ row }) => (
-          <div className="flex flex-col gap-0.5 whitespace-nowrap">
-            <span className="text-[11px] font-bold text-slate-600 uppercase tracking-tight">{formatDate(row.original.createdAt)}</span>
-          </div>
+          <span className="text-[11px] whitespace-nowrap">{formatDate(row.original.createdAt)}</span>
+
         )
       },
       {
@@ -291,36 +293,37 @@ export default function LedgerReportPage() {
         header: "SERVICES NAME",
         accessorKey: "serviceType",
         center: true,
-        cell: ({ row }) => <span className="text-[11px] font-bold text-slate-800 uppercase tracking-tight">{row.original.serviceType || "---"}</span>
+        cell: ({ row }) => <span className=" text-[11px]">{ServiceLabel(row.original.serviceType) || "---"}</span>
       },
       {
         header: "SERVICES CATEGORY",
         accessorKey: "serviceCategory",
         center: true,
-        cell: ({ row }) => <span className="text-[11px] font-bold text-slate-800 uppercase tracking-tight">{row.original.serviceCategory || "---"}</span>
+        cell: ({ row }) => <span className="text-[11px] ">{row.original.serviceCategory || "---"}</span>
       },
       {
         header: "REF ID",
         accessorKey: "referenceId",
         center: true,
+
         cell: ({ row }) => (
-        <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
-          <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
-            {row.original.referenceId}
-          </span>
-        </ClickToCopy>
+          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+              {row.original.referenceId}
+            </span>
+          </ClickToCopy>
         )
       },
       {
         header: "Entry Type",
         accessorKey: "entryType",
-        cell: ({ row }) => <span className="text-[11px] font-bold text-slate-800 uppercase tracking-tight">{row.original.entryType || "---"}</span>
+        cell: ({ row }) => <span className="uppercase text-[11px] ">{row.original.entryType || "---"}</span>
       },
       {
         header: "OPENING BAL",
         accessorKey: "openingBalance",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.openingBalance)}</span>
+        cell: ({ row }) => <span >{formatToINR(row.original.openingBalance)}</span>
       },
       {
         header: "TXN AMOUNT",
@@ -332,25 +335,25 @@ export default function LedgerReportPage() {
         header: "COMMISSION",
         accessorKey: "commission",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-semibold text-slate-700">{formatToINR(row.original.commission)}</span>
+        cell: ({ row }) => <span >{formatToINR(row.original.commission)}</span>
       },
       {
         header: "CHARGES",
         accessorKey: "charges",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-semibold text-slate-700">{formatToINR(row.original.totalCharges)}</span>
+        cell: ({ row }) => <span >{formatToINR(row.original.totalCharges)}</span>
       },
       {
         header: "GST",
         accessorKey: "gst",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.gstAmount)}</span>
+        cell: ({ row }) => <span >{formatToINR(row.original.gstAmount)}</span>
       },
       {
         header: "TDS",
         accessorKey: "tds",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.tdsAmount)}</span>
+        cell: ({ row }) => <span >{formatToINR(row.original.tdsAmount)}</span>
       },
 
 
@@ -358,13 +361,13 @@ export default function LedgerReportPage() {
         header: "CLOSING BAL",
         accessorKey: "closingBalance",
         center: true,
-        cell: ({ row }) => <span className="text-[13px] font-bold text-slate-800">{formatToINR(row.original.closingBalance)}</span>
+        cell: ({ row }) => <span >{formatToINR(row.original.closingBalance)}</span>
       },
       {
         header: "TYPE",
         accessorKey: "type",
         center: true,
-        cell: ({ row }) => <span className={`text-[13px] font-bold capitalize ${row.original.type === "debit" ? "text-rose-500" : "text-emerald-500"}`}>{row.original.type}</span>
+        cell: ({ row }) => <StatusBadge status={row.original.type} />
       },
 
       {

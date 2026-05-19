@@ -127,7 +127,7 @@ export function Header({ isCollapsed, setIsCollapsed, isMobile }) {
               exit={{ height: 0, opacity: 0 }}
               className="bg-gradient-to-tr from-white to-indigo-50/30 flex items-center px-6 overflow-hidden relative group"
             >
-              <div className="flex items-center text-[9px] font-black text-blue-500 uppercase tracking-[0.2em] gap-2">
+              <div className="flex items-center text-[9px] font-bold text-blue-500 uppercase tracking-[0.2em] gap-2">
                 <span className="h-1 w-1 rounded-full bg-blue-500 animate-pulse" />
                 Live Update
               </div>
@@ -175,7 +175,7 @@ export function Header({ isCollapsed, setIsCollapsed, isMobile }) {
             {/* Desktop Ticker - Inline Header Version (Shown only on > 668px) */}
             {!isMobileView && showTicker && (
               <div className="flex items-center gap-2 md:gap-3 bg-white/50 border border-blue-100/40 px-3 md:px-4 py-1.5 rounded-full overflow-hidden relative flex-1 max-w-[300px] lg:max-w-[450px] xl:max-w-[800px] group/ticker shadow-sm">
-                <div className="flex items-center text-[8px] md:text-[9px] font-black text-blue-500 uppercase tracking-widest gap-1.5 md:gap-2 flex-shrink-0 z-10">
+                <div className="flex items-center text-[8px] md:text-[9px] font-bold text-blue-500 uppercase tracking-widest gap-1.5 md:gap-2 flex-shrink-0 z-10">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse shadow-sm" />
                   Live
                 </div>
@@ -225,7 +225,7 @@ export function Header({ isCollapsed, setIsCollapsed, isMobile }) {
                   <Activity className="w-3 md:w-4 h-3 md:h-4 text-amber-600 group-hover:text-white transition-colors" />
                 </div>
                 <div className="flex flex-col flex-shrink-0">
-                  <span className="text-[7px] md:text-[8px] lg:text-[9px] font-black text-amber-600 uppercase tracking-widest leading-none mb-0.5 md:mb-1">AEPS</span>
+                  <span className="text-[7px] md:text-[8px] lg:text-[9px] font-bold text-amber-600 uppercase tracking-widest leading-none mb-0.5 md:mb-1">AEPS</span>
                   <span className={cn(
                     "text-[10px] md:text-[12px] lg:text-[13px] font-bold text-slate-950 leading-none tabular-nums transition-opacity duration-300",
                     walletLoading && "opacity-60"
@@ -247,7 +247,7 @@ export function Header({ isCollapsed, setIsCollapsed, isMobile }) {
                   <Wallet className="w-3 md:w-4 h-3 md:h-4 text-white transition-colors" />
                 </div>
                 <div className="flex flex-col flex-shrink-0">
-                  <span className="text-[7px] md:text-[8px] lg:text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mb-0.5 md:mb-1">MAIN</span>
+                  <span className="text-[7px] md:text-[8px] lg:text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-0.5 md:mb-1">MAIN</span>
                   <span className={cn(
                     "text-[10px] md:text-[12px] lg:text-[13px] font-bold text-slate-950 leading-none tabular-nums transition-opacity duration-300",
                     walletLoading && "opacity-60"

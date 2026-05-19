@@ -14,6 +14,7 @@ import {
 } from "../../../../components/ui/card";
 import { Button } from "../../../../components/ui/button";
 import { Label } from "../../../../components/ui/label";
+import { ConfirmationModal } from "../../../../components/modals/confirmation-modal";
 import { toast } from "sonner";
 import { handleValidationError } from "../../../../utils/helperFunction";
 import {
@@ -32,6 +33,12 @@ const NewUserSetting = () => {
   const dispatch = useDispatch();
   const { data: settings, loading } = useSelector((state) => state.settings);
   const [updatingKey, setUpdatingKey] = useState(null);
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    key: null,
+    title: "",
+    description: ""
+  });
 
   useEffect(() => {
     dispatch(fetchSettings());
@@ -47,6 +54,26 @@ const NewUserSetting = () => {
       toast.error(handleValidationError(error) || "Protocol update failed.");
     } finally {
       setUpdatingKey(null);
+      setConfirmationModal({ isOpen: false, key: null, title: "", description: "" });
+    }
+  };
+
+  const openConfirmationModal = (key, title, description) => {
+    setConfirmationModal({
+      isOpen: true,
+      key,
+      title,
+      description
+    });
+  };
+
+  const closeConfirmationModal = () => {
+    setConfirmationModal({ isOpen: false, key: null, title: "", description: "" });
+  };
+
+  const handleConfirm = () => {
+    if (confirmationModal.key) {
+      handleUpdate(confirmationModal.key);
     }
   };
 
@@ -66,7 +93,7 @@ const NewUserSetting = () => {
         <div className="flex items-center gap-4 border-r border-slate-100 pr-6 shrink-0 h-10">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full animate-pulse-slow ${isActive ? `bg-${color}-500 shadow-sm shadow-${color}-500/50` : 'bg-slate-300'}`} />
-            <span className={`text-[10px] font-black uppercase tracking-widest ${isActive ? 'text-slate-900' : 'text-slate-400'}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-slate-900' : 'text-slate-400'}`}>
               {isActive ? 'Active' : 'Offline'}
             </span>
           </div>
@@ -95,7 +122,7 @@ const NewUserSetting = () => {
       {/* Visual Identity Header */}
       <div className="flex items-center justify-between px-2">
         <div className="space-y-1">
-          <h2 className="text-2xl font-black text-slate-900 tracking-tighter">Security Protocols</h2>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tighter">Security Protocols</h2>
           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Global Access Controls</p>
         </div>
         <div className="h-12 w-12 rounded-2xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-900/10">
@@ -113,7 +140,11 @@ const NewUserSetting = () => {
             updateKey="requireAdminApprovalForCredentials"
             isActive={settings.requireAdminApprovalForCredentials || false}
             onToggle={(newVal) => dispatch(updateLocalSetting({ key: "requireAdminApprovalForCredentials", value: newVal }))}
-            onUpdate={() => handleUpdate("requireAdminApprovalForCredentials")}
+            onUpdate={() => openConfirmationModal(
+              "requireAdminApprovalForCredentials",
+              "Apply Manual Identity Validation Policy",
+              "This will update the manual identity validation settings. All new user registrations will require admin approval before access is granted."
+            )}
           />
 
           <ProtocolRow
@@ -124,10 +155,25 @@ const NewUserSetting = () => {
             updateKey="isKycOnline"
             isActive={settings.isKycOnline || false}
             onToggle={(newVal) => dispatch(updateLocalSetting({ key: "isKycOnline", value: newVal }))}
-            onUpdate={() => handleUpdate("isKycOnline")}
+            onUpdate={() => openConfirmationModal(
+              "isKycOnline",
+              "Apply Digital KYC Audit Engine Policy",
+              "This will update the KYC verification settings. The system will automatically verify user identities through global document databases."
+            )}
           />
         </CardContent>
       </Card>
+
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={handleConfirm}
+        title={confirmationModal.title}
+        description={confirmationModal.description}
+        confirmText="Apply Policy"
+        cancelText="Cancel"
+        isButtonDisabled={updatingKey !== null}
+      />
     </div>
   );
 };

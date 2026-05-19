@@ -416,7 +416,7 @@ const KycTab = ({ userKyc, setUserKyc, onUpdate, onChangeTab }) => {
                     Kyc Status
                   </span>
                   <span
-                    className={`text-[11px] font-black uppercase tracking-wide ${config?.textCol}`}
+                    className={`text-[11px] font-bold uppercase tracking-wide ${config?.textCol}`}
                   >
                     {config?.text}
                   </span>

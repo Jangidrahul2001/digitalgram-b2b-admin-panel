@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { BentoCard } from '../../../../components/ui/bento-card';
 import { motion, AnimatePresence } from "framer-motion";
 import { CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card';
@@ -13,10 +13,11 @@ import { ConfirmationModal } from '../../../../components/modals/confirmation-mo
 import { DataTable } from '../../../../components/tables/data-table';
 import { apiEndpoints } from '../../../../api/apiEndpoints';
 import { toast } from 'sonner';
-import { formatToINR, handleValidationError, InputSlice } from '../../../../utils/helperFunction';
+import { capitalize, formatDate, formatToINR, handleValidationError, InputSlice } from '../../../../utils/helperFunction';
 import { cn } from '../../../../lib/utils';
 import { fetchAdminWallet } from '../../../../store/slices/walletSlice';
 import { useDispatch } from 'react-redux';
+import StatusBadge from '../../../../components/ui/StatusBadge';
 
 // Validation functions
 const validateWalletType = (walletType) => {
@@ -110,7 +111,7 @@ const ModernWalletCard = ({ label, value, type, trend }) => {
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
             {label}
           </p>
-          <h3 className={`text-xl font-black tracking-tight ${config?.text}`}>
+          <h3 className={`text-xl font-bold tracking-tight ${config?.text}`}>
             {value}
           </h3>
         </div>
@@ -161,20 +162,12 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
 
   // Fetch wallet transactions
   const { data: walletData, refetch } = useFetch(
-    `${apiEndpoints.fetchWalletTransactions}/${userId}?page=${pageIndex}&limit=${pageSize}`,
+    `${apiEndpoints.fetchParticukarUserWalletTransactions}?userId=${userId}&page=${pageIndex}&limit=${pageSize}&search=${search}`,
     {
       onSuccess: (data) => {
         if (data?.success && data?.data) {
-          const mappedTransactions = data?.data?.map((transaction) => ({
-            ...transaction,
-            id: transaction._id,
-            formattedDate: new Date(transaction.createdAt).toLocaleDateString('en-IN'),
-            formattedTime: new Date(transaction.createdAt).toLocaleTimeString('en-IN', {
-              hour: '2-digit',
-              minute: '2-digit'
-            }),
-          }));
-          setTransactions(mappedTransactions);
+          console.log(data)
+          setTransactions(data.data);
           setTotalRecords(data.pagination?.total || 0);
           setIsLoading(false)
         }
@@ -187,6 +180,12 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
     },
     false
   );
+  useEffect(() => {
+    if (userId) {
+      setIsLoading(true)
+      refetch()
+    }
+  }, [search])
 
   const { patch, error: apiError } = usePatch({
     onSuccess: (response) => {
@@ -195,11 +194,13 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
       setErrors({});
       setIsSubmitting(false);
       setShowConfirmModal(false)
-      // refetch(); // Refresh the transactions table
+      refetch(); // Refresh the transactions table
       fetchParticularUser()
       dispatch(fetchAdminWallet());
     },
     onError: (error) => {
+      setIsSubmitting(false);
+      setShowConfirmModal(false)
       toast.error(handleValidationError(error) || "Something went wrong");
     }
   });
@@ -286,25 +287,9 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
     }
   };
 
-  const getActionColor = (action) => {
-    switch (action?.toLowerCase()) {
-      case 'credit': return 'text-emerald-600';
-      case 'debit': return 'text-red-600';
-      case 'hold': return 'text-amber-600';
-      case 'release': return 'text-blue-600';
-      default: return 'text-slate-600';
-    }
-  };
 
-  const getActionIcon = (action) => {
-    switch (action?.toLowerCase()) {
-      case 'credit': return ArrowUpRight;
-      case 'debit': return ArrowDownLeft;
-      case 'hold': return Clock;
-      case 'release': return Unlock;
-      default: return Wallet;
-    }
-  };
+
+
 
   const getWalletLabel = (walletType) => {
     const wallet = walletOptions.find(w => w.value === walletType);
@@ -330,7 +315,7 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
       ),
     },
     {
-      accessorKey: "walletType",
+      accessorKey: "wallet",
       header: "WALLET TYPE",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
@@ -338,7 +323,7 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
             <Wallet className="w-4 h-4 text-blue-600" />
           </div>
           <span className="font-medium text-slate-700 text-[13px]">
-            {row.getValue("walletType") || "Main Wallet"}
+            {capitalize(row.getValue("wallet")) || "---"}
           </span>
         </div>
       ),
@@ -348,13 +333,10 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
       header: "ACTION",
       cell: ({ row }) => {
         const action = row.getValue("type");
-        const ActionIcon = getActionIcon(action);
         return (
           <div className="flex items-center gap-2">
-            <ActionIcon className={`w-4 h-4 ${getActionColor(action)}`} />
-            <span className={`font-medium text-[13px] capitalize ${getActionColor(action)}`}>
-              {action}
-            </span>
+            <StatusBadge status={action} />
+
           </div>
         );
       },
@@ -364,7 +346,7 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
       header: "AMOUNT",
       cell: ({ row }) => (
         <span className="font-bold text-slate-900 text-[13px]">
-          ₹ {row.getValue("amount")?.toLocaleString('en-IN') || '0.00'}
+          {formatToINR(row.getValue("amount"))}
         </span>
       ),
     },
@@ -378,42 +360,14 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
       ),
     },
     {
-      accessorKey: "status",
-      header: "STATUS",
-      cell: ({ row }) => {
-        const status = row.original.status || "completed";
-        const statusConfig = {
-          completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-          pending: "bg-amber-50 text-amber-700 border-amber-200",
-          failed: "bg-red-50 text-red-700 border-red-200",
-        };
-
-        return (
-          <span className={cn(
-            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border",
-            statusConfig[status] || statusConfig.completed
-          )}>
-            <span className={cn(
-              "h-1 w-1 rounded-full",
-              status === 'completed' ? "bg-emerald-500" :
-                status === 'pending' ? "bg-amber-500" : "bg-red-500"
-            )} />
-            {status}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: "formattedDate",
+      accessorKey: "createdAt",
       header: "DATE & TIME",
       cell: ({ row }) => (
         <div className="flex flex-col items-end">
           <span className="font-medium text-slate-700 text-[13px]">
-            {row.getValue("formattedDate")}
+            {formatDate(row.getValue("createdAt"))}
           </span>
-          <span className="text-xs text-slate-400">
-            {row.original.formattedTime}
-          </span>
+
         </div>
       ),
     },
@@ -457,7 +411,7 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
               <Settings className="w-3.5 h-3.5 text-white" />
             </div>
             <div>
-              <CardTitle className="text-base font-black text-slate-900 uppercase tracking-tight">
+              <CardTitle className="text-base font-bold text-slate-900 uppercase tracking-tight">
                 Admin Actions
               </CardTitle>
               <CardDescription className="text-[11px] text-slate-600 font-medium">
@@ -557,7 +511,7 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
                 }}
                 exportData={transactions}
                 exportColumns={columns}
-                fileName={`Wallet_Transactions_${userId}`}
+                fileName={`Wallet_Transactions_${user?.userName}`}
                 title={
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -594,8 +548,8 @@ const WalletTab = ({ userId, user, fetchParticularUser }) => {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-slate-600">Action:</span>
-            <span className={`font-medium ${getActionColor(formData.action)}`}>
-              {getActionLabel(formData.action)}
+            <span className={`font-medium `}>
+              <StatusBadge status={formData.action} />
             </span>
           </div>
           <div className="flex justify-between text-sm">

@@ -1,4 +1,4 @@
-
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,6 +8,7 @@ import { ShieldCheck, Loader2, ArrowRight } from "@/components/icons";
 import { toast } from "sonner";
 import { apiEndpoints } from "../../../api/apiEndpoints";
 import { usePost } from "../../../hooks/usePost";
+// import { useAuth } from "../../../hooks/use-auth";
 import { useDispatch } from "react-redux";
 import { fetchProfile } from "../../../store/slices/profileSlice";
 

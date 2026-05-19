@@ -4,6 +4,17 @@ export function dateSplitByT(dateInput) {
   }
 }
 
+export const formatDateForBackend = (date) => {
+  if (!date) return "";
+  const d = new Date(date);
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 export const capitalize = (str) =>
   typeof str === "string"
     ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
@@ -15,19 +26,20 @@ export function formatDate(dateString) {
     return "";
   }
 
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = date.toLocaleString('en-US', { month: 'short' });
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
   const year = date.getFullYear();
 
   let hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  const strTime = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
+  const strTime =
+    hours.toString().padStart(2, "0") + ":" + minutes + " " + ampm;
 
   // return `${day}-${month}-${year} ${strTime}`;//if need time in this format then use this line
-  return `${day}-${month}-${year}`;//if need date only
+  return `${day}-${month}-${year}`; //if need date only
 }
 
 export function formatDateOrTime(dateString) {
@@ -138,7 +150,6 @@ export const formatIfscInput = (value) => {
   return value.replace(/[^A-Z0-9]/g, "").slice(0, 11);
 };
 
-
 export const formatUpiInput = (value) => {
   return value
     .toLowerCase() // UPI is usually lowercase
@@ -176,20 +187,27 @@ export const gstRegex =
   /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 export const nameRegex = /^[A-Za-z]{3,}$/;
 export const nameWithSpaceRegex = /^[A-Za-z]{3,}(?:\s+[A-Za-z]{3,})*$/;
-export const urlRegex = /^https?:\/\/.+/
-
+export const urlRegex = /^https?:\/\/.+/;
 
 export const ServiceLabel = (service) => {
   const services = {
+    aeps1: "AEPs 1",
+    aeps2: "AEPs 2",
     aeps: "AEPs",
     bbps: "Bill Payment",
+    bbps1: "Bill Payment",
     dmt: "Money Transfer",
+    dmt1: "Money Transfer",
     "aeps-payout": "AEPs-Payout",
+    "aeps-payout1": "AEPs-Payout",
     "xpress-payout": "Xpress-Payout",
+    "xpress-payout1": "Xpress-Payout",
     recharge: "Recharge",
-    "offline-services": "Offline Services",
-    "online-services": "Online Services",
+    recharge1: "Recharge",
+    "offline-service": "Offline Services",
+    "online-service": "Online Services",
     "upi-payout": "UPI-Payout",
+    "upi-payout1": "UPI-Payout",
   };
   return services?.[service] || service;
 };

@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "../../../../components/ui/card";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
-import { emailRegex, formatEmailInput,  formatNameInputWithSpace, formatNumberInput, handleValidationError, nameWithSpaceRegex, phoneRegex } from "../../../../utils/helperFunction";
+import { emailRegex, formatEmailInput, formatNameInputWithSpace, formatNumberInput, handleValidationError, nameWithSpaceRegex, phoneRegex } from "../../../../utils/helperFunction";
 import { useFetch } from "../../../../hooks/useFetch";
 import { usePost } from "../../../../hooks/usePost";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ export function AddEmployeeForm({ onCancel }) {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [modulePermissions, setModulePermission] = useState([]);
+  const [isPosting, setIsPosting] = useState(false);
 
   const { refetch: fetchPermissions } = useFetch(
     `${apiEndpoints.permissionList}`,
@@ -50,15 +51,17 @@ export function AddEmployeeForm({ onCancel }) {
       toast.success("Employee added successfully");
       setFormData({ name: "", email: "", phone: "", permissions: [] });
       setErrors({});
+      setIsPosting(false)
       onCancel?.();
     },
     onError: (error) => {
+      setIsPosting(false);
       toast.error(handleValidationError(error) || "Failed to add employee");
     },
   });
 
   const handleChange = (field, value) => {
-    
+
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -80,17 +83,17 @@ export function AddEmployeeForm({ onCancel }) {
 
   const validate = () => {
     const newErrors = {};
-   
-  
 
-    if (!formData.name.trim()) newErrors.name = "Required";
-     else if(!nameWithSpaceRegex.test(formData.name?.trim())){
-        newErrors.name = "Enter a valid name";
-      }
-    if (!formData.email.trim()) newErrors.email = "Required";
+
+
+    if (!formData.name.trim()) newErrors.name = "Name is Required";
+    else if (!nameWithSpaceRegex.test(formData.name?.trim())) {
+      newErrors.name = "Enter a valid name";
+    }
+    if (!formData.email.trim()) newErrors.email = "Email is Required";
     else if (!emailRegex.test(formData.email))
       newErrors.email = "Invalid format";
-    if (!formData.phone.trim()) newErrors.phone = "Required";
+    if (!formData.phone.trim()) newErrors.phone = "Phone No. is Required";
     else if (!phoneRegex.test(formData.phone))
       newErrors.phone = "10 digits required";
     if (formData.permissions.length === 0)
@@ -103,6 +106,7 @@ export function AddEmployeeForm({ onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsPosting(true)
     await addEmployee(formData);
   };
 
@@ -137,7 +141,7 @@ export function AddEmployeeForm({ onCancel }) {
             </CardTitle>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -148,7 +152,7 @@ export function AddEmployeeForm({ onCancel }) {
                   <Input
                     placeholder="Full Name"
                     value={formData.name}
-                    onChange={(e) => handleChange("name", formatNameInputWithSpace(e.target.value,60))}
+                    onChange={(e) => handleChange("name", formatNameInputWithSpace(e.target.value, 60))}
                     error={errors.name}
                     className={`h-9 md:h-10 pl-10 bg-white border-slate-200 rounded-xl focus:ring-4 focus:ring-slate-900/5 transition-all text-[13px] font-semibold placeholder:font-normal ${errors.name ? "border-rose-300 ring-rose-50" : ""}`}
                   />
@@ -161,7 +165,7 @@ export function AddEmployeeForm({ onCancel }) {
                   <Mail className="absolute left-3 top-4.5 md:top-5 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" size={16} />
                   <Input
                     placeholder="example@work.com"
-             
+
                     value={formData.email}
                     error={errors.email}
                     onChange={(e) => handleChange("email", formatEmailInput(e.target.value))}
@@ -178,7 +182,7 @@ export function AddEmployeeForm({ onCancel }) {
                     placeholder="10 digit number"
                     value={formData.phone}
                     error={errors.phone}
-                    onChange={(e) => handleChange("phone", formatNumberInput(e.target.value,10))}
+                    onChange={(e) => handleChange("phone", formatNumberInput(e.target.value, 10))}
                     maxLength={10}
                     className={`h-9 md:h-10 pl-10 bg-white border-slate-200 rounded-xl focus:ring-4 focus:ring-slate-900/5 transition-all text-[13px] font-semibold placeholder:font-normal ${errors.phone ? "border-rose-300 ring-rose-50" : ""}`}
                   />
@@ -221,7 +225,7 @@ export function AddEmployeeForm({ onCancel }) {
                   );
                 })}
               </div>
-              
+
               {errors.permissions && (
                 <p className="text-[11px] font-medium text-rose-500 text-center">{errors.permissions}</p>
               )}
@@ -233,11 +237,13 @@ export function AddEmployeeForm({ onCancel }) {
                 variant="ghost"
                 className="text-slate-400 hover:text-slate-900 hover:bg-slate-100 h-10 px-8 rounded-xl font-bold text-sm transition-all"
                 onClick={onCancel}
+                disabled={isPosting || isLoading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
+                disabled={isPosting || isLoading}
                 className="bg-slate-900 text-white hover:bg-slate-800 h-10 px-10 rounded-xl shadow-lg shadow-slate-900/10 transition-all font-bold text-sm"
               >
                 Create Account

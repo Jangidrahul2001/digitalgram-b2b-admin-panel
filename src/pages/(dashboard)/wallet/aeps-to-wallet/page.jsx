@@ -14,6 +14,7 @@ import { butteryDropdown } from "../../../../lib/animations";
 import { Calendar as CalendarIcon } from "@/components/icons";
 import {
   formatDate,
+  formatDateForBackend,
   handleValidationError,
 } from "../../../../utils/helperFunction";
 import { DateRangePicker } from "../../../../components/ui/date-range-picker";
@@ -56,7 +57,7 @@ export default function AepsToWalletPage() {
 
   const { refetch: fetchAepsToWalletHistory } = useFetch(
     `${apiEndpoints.aepsTowalletHistory}?page=${pageIndex}&limit=${pageSize}&search=${searchQuery}${selectedUser && selectedUser !== "" ? `&userId=${selectedUser}` : ""
-    }${date.from ? `&startDate=${format(date.from, "yyyy-MM-dd")}` : ""}${date.to ? `&endDate=${format(date.to, "yyyy-MM-dd")}` : ""
+    }${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""
     }`,
     {
       onSuccess: (data) => {

@@ -9,7 +9,7 @@ import { cn } from "../../../../lib/utils";
 import { toast } from "sonner";
 import { CheckCircle2, File, XCircle } from "lucide-react";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
-import { handleValidationError } from "../../../../utils/helperFunction";
+import { formatDateForBackend, handleValidationError } from "../../../../utils/helperFunction";
 import { useFetch } from "../../../../hooks/useFetch";
 import { usePatch } from "../../../../hooks/usePatch";
 import { AccountWhitelistActionModal } from "../../../../components/modals/AccountWhitelistActionModal";
@@ -40,7 +40,7 @@ export default function AccountWhitelistPage() {
     apiEndpoints.fetchAllUserWithoutPagination,
     {
       onSuccess: (data) => {
-        if (data?.success && data?.data ) {
+        if (data?.success && data?.data) {
           const userOptions = data?.data?.map(user => ({
             label: `${user.fullName} (${user.userName})`,
             shortLabel: user.fullName,
@@ -70,8 +70,8 @@ export default function AccountWhitelistPage() {
 
   const { refetch: fetchWhiteListRequest } = useFetch(
     `${apiEndpoints.whiteListRequest}?page=${pageIndex}&limit=${pageSize}&search=${search}${statusFilter && statusFilter !== "all" ? `&status=${statusFilter}` : ""
-    }${selectedUser && selectedUser !== "all" ? `&userId=${selectedUser}` : ""}${date.from ? `&startDate=${format(date.from, "yyyy-MM-dd")}` : ""
-    }${date.to ? `&endDate=${format(date.to, "yyyy-MM-dd")}` : ""}`,
+    }${selectedUser && selectedUser !== "all" ? `&userId=${selectedUser}` : ""}${date.from ? `&from=${formatDateForBackend(date.from)}` : ""
+    }${date.to ? `&to=${formatDateForBackend(date.to)}` : ""}`,
     {
       onSuccess: (data) => {
         if (data?.success && data?.data) {
@@ -164,7 +164,7 @@ export default function AccountWhitelistPage() {
         cell: ({ row }) => {
           const ifsc = row.getValue("ifscCode");
           return (
-            <ClickToCopy text={ifsc} className={"text-slate-600 font-semibold bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 text-[12px] font-mono cursor-pointer hover:bg-slate-100 hover:text-slate-900 transition-all active:scale-95 inline-block"}>
+            <ClickToCopy text={ifsc} className={"text-slate-600 font-semibold bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 text-[12px]  cursor-pointer hover:bg-slate-100 hover:text-slate-900 transition-all active:scale-95 inline-block tracking-wide"}>
               {ifsc}
             </ClickToCopy>
 
@@ -189,7 +189,7 @@ export default function AccountWhitelistPage() {
         accessorKey: "bankName",
         header: "BANK NAME",
         cell: ({ row }) => (
-          <span className="text-slate-500 font-medium text-[13px]">{row.getValue("bankName")}</span>
+          <span className="text-slate-500 font-medium text-[12px]">{row.getValue("bankName")}</span>
         ),
       },
       {
@@ -199,13 +199,13 @@ export default function AccountWhitelistPage() {
           <div className="flex flex-col gap-1.5 py-1 items-center">
             <button
               onClick={() => { setSelectedFile(`${import.meta.env.VITE_API_URL}${row.original.chequeImageUrl}`); setImageModalOpen(true); }}
-              className="flex cursor-pointer items-center justify-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors bg-blue-50/50 px-3 py-1 rounded-lg border border-blue-100/50 w-fit"
+              className="flex cursor-pointer items-center justify-center gap-1.5 text-[9px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors bg-blue-50/50 px-3 py-1 rounded-lg border border-blue-100/50 w-fit"
             >
               <File size={12} strokeWidth={3} /> View Cheque
             </button>
             <button
               onClick={() => { setSelectedFile(`${import.meta.env.VITE_API_URL}${row.original.passbookOrBankStatementUrl}`); setImageModalOpen(true); }}
-              className="flex cursor-pointer items-center justify-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors bg-blue-50/50 px-3 py-1 rounded-lg border border-blue-100/50 w-fit"
+              className="flex cursor-pointer items-center justify-center gap-1.5 text-[9px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors bg-blue-50/50 px-3 py-1 rounded-lg border border-blue-100/50 w-fit"
             >
               <File size={12} strokeWidth={3} /> View Statement
             </button>

@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 
 import { usePost } from "../../../../hooks/usePost";
-import {  formatNameInputWithSpace, handleValidationError } from "../../../../utils/helperFunction";
+import { formatNameInputWithSpace, handleValidationError } from "../../../../utils/helperFunction";
 import { apiEndpoints } from "../../../../api/apiEndpoints";
 import { toast } from "sonner";
 import { data } from "react-router-dom";
@@ -154,7 +154,7 @@ const MenuBar = ({ editor, activeTab }) => {
         <div className="absolute top-[48px] left-0 w-full flex items-center gap-3 px-6 py-2 bg-white/90 backdrop-blur-md border-b border-slate-100 z-30 animate-in fade-in slide-in-from-top-1 duration-300">
           <Loader2 className="w-4 h-4 text-slate-900 animate-spin" />
           <div className="h-4 w-px bg-slate-200 mx-1" />
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] pt-0.5">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] pt-0.5">
             {aiState === 1 ? "DRAFTING STRATEGIC FRAMEWORK..." :
               aiState === 2 ? "CRAFTING EXECUTIVE SUMMARY..." :
                 aiState === 3 ? "OPTIMIZING COMPLIANCE PROTOCOL..." :
@@ -283,7 +283,7 @@ export default function PolicyTab({ title }) {
     <div className="space-y-6 max-w-[1600px] mx-auto pb-20 font-sans">
       <Card className="border border-slate-100 shadow-sm bg-white rounded-2xl overflow-hidden">
         <CardHeader className="pb-4 pt-6 px-10">
-          <CardTitle className="text-lg font-black text-slate-950 flex items-center gap-2 uppercase tracking-widest leading-none">
+          <CardTitle className="text-lg font-bold text-slate-950 flex items-center gap-2 uppercase tracking-widest leading-none">
             <Globe className="w-4 h-4 text-slate-400" />Technical Metadata</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 px-10 pb-8">

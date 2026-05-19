@@ -276,15 +276,14 @@ export function OrderViewTab({ orderId, handleTabChange }) {
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-500
-                  ${
-                    state === "done"
+                  ${state === "done"
                       ? "bg-indigo-600 border-indigo-600 text-white"
                       : state === "active"
                         ? "bg-white border-indigo-500 text-indigo-600 shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
                         : state === "cancelled"
                           ? "bg-slate-100 border-slate-200 text-slate-300"
                           : "bg-white border-slate-200 text-slate-300"
-                  }`}
+                    }`}
                 >
                   {state === "done" ? (
                     <CheckCircle2 className="w-4 h-4" />
@@ -294,13 +293,12 @@ export function OrderViewTab({ orderId, handleTabChange }) {
                 </div>
                 <span
                   className={`text-[11px] font-semibold text-center leading-tight
-                  ${
-                    state === "done"
+                  ${state === "done"
                       ? "text-indigo-600"
                       : state === "active"
                         ? "text-slate-800"
                         : "text-slate-300"
-                  }`}
+                    }`}
                 >
                   {step.label}
                 </span>
@@ -388,7 +386,7 @@ export function OrderViewTab({ orderId, handleTabChange }) {
                 <span className="text-sm font-bold text-slate-800">
                   Total Amount
                 </span>
-                <span className="text-xl font-black text-indigo-600">
+                <span className="text-xl font-bold text-indigo-600">
                   ₹{order.grandTotal}
                 </span>
               </div>
@@ -398,7 +396,7 @@ export function OrderViewTab({ orderId, handleTabChange }) {
             <div className="mx-6 mb-6 rounded-xl bg-gradient-to-r from-slate-50 to-slate-50/60 border border-slate-100 p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-7 bg-gradient-to-br from-blue-600 to-blue-800 rounded-md flex items-center justify-center shadow-sm">
-                  <span className="text-white text-[9px] font-black tracking-widest">
+                  <span className="text-white text-[9px] font-bold tracking-widest">
                     VISA
                   </span>
                 </div>
@@ -449,7 +447,7 @@ export function OrderViewTab({ orderId, handleTabChange }) {
               {/* Avatar row */}
               <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-50">
                 <div className="relative">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-100 flex items-center justify-center font-black text-indigo-600 text-base shadow-sm">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-600 text-base shadow-sm">
                     {order.fullName
                       ? order.fullName.charAt(0).toUpperCase()
                       : "N"}

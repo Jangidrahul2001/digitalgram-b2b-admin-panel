@@ -16,11 +16,15 @@ export const apiEndpoints = {
   updatePackageStatus: "/admin/package/update-status",
   // fetchActivepackages: "/admin/package/get-active-packages",
 
+  // dashboard 
+  fetchLatestTransactions: "/admin/dashboard/latest-transaction",
+
   // users
   fetchUsers: "/admin/user/get-users",
   createUser: "/admin/user/create-user",
   assignPackage: "/admin/user/assign-package",
   fetchParticularUser: "/admin/user/particular-user",
+  fetchParticukarUserWalletTransactions:"/admin/walletHistory/complete-history",
   updateUserStatus: "/admin/user/update-user-status",
 
   // user requests

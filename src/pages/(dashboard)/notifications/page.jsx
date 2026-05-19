@@ -65,8 +65,8 @@ export default function NotificationsPage() {
   const filteredNotifications = useMemo(() => {
     return (notifications || []).filter(n => {
       const matchesFilter = filter === 'all' || (filter === 'unread' ? !n.isRead : n.isRead);
-      const matchesSearch = !searchQuery || 
-        n.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch = !searchQuery ||
+        n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         n.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesFilter && matchesSearch;
     });
@@ -122,9 +122,9 @@ export default function NotificationsPage() {
         <div className="w-full lg:w-1/3 flex justify-center px-4">
           <div className="relative group w-full max-w-sm">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Search notifications..." 
+            <input
+              type="text"
+              placeholder="Search notifications..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all shadow-sm"
@@ -178,8 +178,8 @@ export default function NotificationsPage() {
               )}
             >
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{stat.label}</p>
-                <p className={cn("text-2xl font-black tabular-nums", stat.color)}>{stat.count}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">{stat.label}</p>
+                <p className={cn("text-2xl font-bold tabular-nums", stat.color)}>{stat.count}</p>
               </div>
               <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center", stat.bg, "border border-black/5")}>
                 <stat.icon className={cn("w-5 h-5", stat.color)} />
@@ -202,7 +202,7 @@ export default function NotificationsPage() {
               <div key={groupTitle} className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-slate-100" />
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] bg-white px-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] bg-white px-2">
                     {groupTitle}
                   </span>
                   <div className="h-px flex-1 bg-slate-100" />
@@ -242,7 +242,7 @@ export default function NotificationsPage() {
                               {notif.title}
                             </h3>
                             {!notif.isRead && (
-                              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-600 text-[8px] font-black text-white uppercase tracking-widest shadow-sm shadow-indigo-200">
+                              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-600 text-[8px] font-bold text-white uppercase tracking-widest shadow-sm shadow-indigo-200">
                                 <span className="w-0.5 h-0.5 rounded-full bg-white animate-pulse" />
                                 New
                               </div>
@@ -312,7 +312,7 @@ export default function NotificationsPage() {
                   <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
                 </motion.div>
               </div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight mb-2 uppercase">All Caught Up!</h3>
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-2 uppercase">All Caught Up!</h3>
               <p className="text-slate-400 text-sm max-w-[280px] font-semibold leading-relaxed">
                 Your archive is clean. We'll notify you as soon as something important happens.
               </p>

@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { useState } from "react";
-import { Check, Settings, ClipboardList } from "@/components/icons";
+import { Check, Settings, ClipboardList, Plus } from "@/components/icons";
 import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
 import { Textarea } from "../../../../../components/ui/textarea";
@@ -13,6 +13,7 @@ import { apiEndpoints } from "../../../../../api/apiEndpoints";
 import { PageLayout } from "../../../../../components/layouts/page-layout";
 import { handleValidationError } from "../../../../../utils/helperFunction";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
+import { AddRequirementModal } from "../../../../../components/modals/add-requirement-modal";
 
 export default function NewOfflineServicePage() {
   const navigate = useNavigate();
@@ -32,6 +33,11 @@ export default function NewOfflineServicePage() {
     requiredFields: [],
   });
   const [serviceImageUrl, setServiceImageUrl] = useState(null);
+
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: "document", // 'document' or 'field'
+  });
 
   useFetch(
     `${apiEndpoints.fetchOfflineServiceById}/${serviceId}`,
@@ -132,7 +138,7 @@ export default function NewOfflineServicePage() {
           type === "requiredDocuments" ? documentOptions : fieldOptions;
         const allIds = allOptions
           .filter((o) => o.label !== "Select All")
-          .map((o) => o._id);
+          .map((o) => o._id || o.label);
         const isAllSelected = allIds.every((id) => list.includes(id));
         return { ...prev, [type]: isAllSelected ? [] : allIds };
       }
@@ -149,7 +155,7 @@ export default function NewOfflineServicePage() {
         type === "requiredDocuments" ? documentOptions : fieldOptions;
       const allIds = allOptions
         .filter((o) => o.label !== "Select All")
-        .map((o) => o._id);
+        .map((o) => o._id || o.label);
       return (
         allIds.length > 0 && allIds.every((id) => formData[type].includes(id))
       );
@@ -214,6 +220,24 @@ export default function NewOfflineServicePage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
     }
+  };
+
+  const handleAddRequirement = ({ type, label }) => {
+    const newId = label; // Use label as ID since backend might not have generated one
+    if (type === "document") {
+      setDocumentOptions((prev) => [...prev, { _id: newId, label }]);
+      setFormData((prev) => ({
+        ...prev,
+        requiredDocuments: [...prev.requiredDocuments, newId],
+      }));
+    } else {
+      setFieldOptions((prev) => [...prev, { _id: newId, label }]);
+      setFormData((prev) => ({
+        ...prev,
+        requiredFields: [...prev.requiredFields, newId],
+      }));
+    }
+    toast.success(`${type === "document" ? "Document" : "Field"} added successfully!`);
   };
 
   const loading = createLoading;
@@ -307,7 +331,6 @@ export default function NewOfflineServicePage() {
           </CardContent>
         </Card>
 
-
         {/* Card 2: Requirements */}
         <Card className="bg-white rounded-[1.5rem] overflow-hidden border border-slate-100 shadow-sm">
           <CardHeader className="p-5 md:p-6 pb-2 md:pb-3 border-b border-slate-50">
@@ -325,6 +348,15 @@ export default function NewOfflineServicePage() {
                   <h3 className="text-lg font-bold text-slate-900">
                     Documents Required
                   </h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 rounded-lg text-xs font-bold text-slate-600 bg-slate-50 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+                    onClick={() => setModalState({ isOpen: true, type: "document" })}
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Add New
+                  </Button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
                   {documentOptions.map((option) => (
@@ -375,6 +407,15 @@ export default function NewOfflineServicePage() {
                   <h3 className="text-lg font-bold text-slate-900">
                     Data Fields Required
                   </h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 rounded-lg text-xs font-bold text-slate-600 bg-slate-50 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+                    onClick={() => setModalState({ isOpen: true, type: "field" })}
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Add New
+                  </Button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
                   {fieldOptions.map((option) => (
@@ -443,6 +484,13 @@ export default function NewOfflineServicePage() {
           {loading ? "Processing..." : isEditMode ? "Update Service" : "Save Service"}
         </Button>
       </div>
+      
+      <AddRequirementModal 
+        isOpen={modalState.isOpen}
+        type={modalState.type}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+        onAdd={handleAddRequirement}
+      />
     </PageLayout>
   );
 }

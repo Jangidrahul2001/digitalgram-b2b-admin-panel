@@ -41,7 +41,7 @@ const TXN_DATA = {
   serviceCategory: "UTILITY BILLS",
   date: "2026-03-10 10:05:57",
   details: {
-    user: "camlenio software (ID: )",
+    user: "User Name",
     txnType: "REFUND",
     service: "BBPS_JVVNL0000RAJ01",
     amount: 948.00,
@@ -105,7 +105,7 @@ const BalancedCard = ({ children, className, title, icon: Icon, colorClass = "te
       <div className="px-5 py-4 sm:px-8 sm:py-5 border-b border-slate-200/50 flex items-center justify-between bg-slate-50/30 shrink-0">
         <div className="flex items-center gap-3 min-w-0 pr-4">
           {Icon && <Icon size={16} className={cn(colorClass, "shrink-0")} />}
-          <h3 className={cn("text-[10px] font-black uppercase tracking-[0.2em] truncate", colorClass)}>{title}</h3>
+          <h3 className={cn("text-[10px] font-bold uppercase tracking-[0.2em] truncate", colorClass)}>{title}</h3>
         </div>
         <div className="h-1.5 w-1.5 rounded-full bg-slate-200 shrink-0" />
       </div>
@@ -125,7 +125,7 @@ const DetailRow = ({ label, value, icon: Icon, color = "text-slate-700" }) => (
       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">{label}</p>
     </div>
     <div className="flex items-center justify-end gap-3 flex-1 min-w-0">
-      <p className={cn("flex-1 min-w-0 text-[13px] font-black tracking-tight text-right break-all sm:break-words", color)} title={typeof value === 'string' ? value : undefined}>{value || "---"}</p>
+      <p className={cn("flex-1 min-w-0 text-[13px] font-bold tracking-tight text-right break-all sm:break-words", color)} title={typeof value === 'string' ? value : undefined}>{value || "---"}</p>
     </div>
   </div>
 );
@@ -176,7 +176,7 @@ export default function LedgerDetailsPage() {
             />
           ))}
         </div>
-        <p className="mt-8 text-[11px] font-black text-slate-500 uppercase tracking-[0.4em]">Retrieving Audit Log...</p>
+        <p className="mt-8 text-[11px] font-bold text-slate-500 uppercase tracking-[0.4em]">Retrieving Audit Log...</p>
       </div>
     );
   }
@@ -185,8 +185,8 @@ export default function LedgerDetailsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px]">
         <XCircle className="w-16 h-16 text-slate-200 mb-4" />
-        <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">Audit File Not Found</h2>
-        <Button onClick={() => navigate(-1)} className="mt-8 rounded-xl bg-indigo-600 text-white font-black text-[10px] uppercase tracking-widest px-8">Return to Central</Button>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Audit File Not Found</h2>
+        <Button onClick={() => navigate(-1)} className="mt-8 rounded-xl bg-indigo-600 text-white font-bold text-[10px] uppercase tracking-widest px-8">Return to Central</Button>
       </div>
     );
   }
@@ -202,7 +202,7 @@ export default function LedgerDetailsPage() {
         center: true,
         cell: ({ row }) => (
           <div className="flex items-center justify-center min-w-[60px]">
-            <span className="font-black text-slate-700 text-[13px] tabular-nums">{row.index + 1}</span>
+            <span className="font-bold text-slate-700 text-[13px] tabular-nums">{row.index + 1}</span>
           </div>
         )
       },
@@ -210,19 +210,19 @@ export default function LedgerDetailsPage() {
         header: "TRANSACTION AMOUNT",
         accessorKey: "txnAmount",
         center: true,
-        cell: ({ row }) => <span className="font-black text-slate-700 text-[13px] tabular-nums">{formatToINR(row.original.txnAmount)}</span>
+        cell: ({ row }) => <span className="font-bold text-slate-700 text-[13px] tabular-nums">{formatToINR(row.original.txnAmount)}</span>
       },
       {
         accessorKey: "commission",
         header: "COMMISSION (+)",
         center: true,
-        cell: ({ row }) => <span className="font-black text-emerald-600 text-[13px] tabular-nums">+ {formatToINR(row.original.commission)}</span>
+        cell: ({ row }) => <span className="font-bold text-emerald-600 text-[13px] tabular-nums">+ {formatToINR(row.original.commission)}</span>
       },
       {
         accessorKey: "charges",
         header: "CHARGES (-)",
         center: true,
-        cell: ({ row }) => <span className="font-black text-rose-500 text-[13px] tabular-nums">- {formatToINR(row.original.charges)}</span>
+        cell: ({ row }) => <span className="font-bold text-rose-500 text-[13px] tabular-nums">- {formatToINR(row.original.charges)}</span>
       },
       {
         accessorKey: "gst",
@@ -242,7 +242,7 @@ export default function LedgerDetailsPage() {
         center: true,
         cell: ({ row }) => (
           <div className="px-3 py-1 rounded-lg bg-indigo-50/50 inline-block">
-            <span className="font-black text-indigo-600 text-sm tabular-nums">{formatToINR(row.original.closingBalance)}</span>
+            <span className="font-bold text-indigo-600 text-sm tabular-nums">{formatToINR(row.original.closingBalance)}</span>
           </div>
         )
       }
@@ -268,14 +268,14 @@ export default function LedgerDetailsPage() {
               <IndianRupee className="w-6 h-6 xl:w-7 2xl:w-8" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] xl:text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] mb-1 xl:mb-2 truncate">Transaction Amount</p>
+              <p className="text-[10px] xl:text-[11px] font-bold text-slate-400 uppercase tracking-[0.25em] mb-1 xl:mb-2 truncate">Transaction Amount</p>
               <div className="flex flex-wrap sm:flex-nowrap items-baseline sm:items-center gap-3">
-                <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-black text-slate-900 tracking-tightest leading-none truncate">
+                <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold text-slate-900 tracking-tightest leading-none truncate">
                   <span className="text-slate-300 mr-1 xl:mr-2">₹</span>
                   {(ledgerItem.txnAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </h2>
                 <span className={cn(
-                  "px-2.5 py-1 rounded-lg text-[9px] xl:text-[10px] font-black uppercase shrink-0 self-start sm:self-auto shadow-sm",
+                  "px-2.5 py-1 rounded-lg text-[9px] xl:text-[10px] font-bold uppercase shrink-0 self-start sm:self-auto shadow-sm",
                   ledgerItem.status === 'failed' || ledgerItem.status === 'FAILED'
                     ? "bg-rose-50 text-rose-600 border border-rose-100"
                     : "bg-emerald-50 text-emerald-600 border border-emerald-100"
@@ -299,8 +299,8 @@ export default function LedgerDetailsPage() {
               { label: "GST", value: formatToINR(ledgerItem.gst), color: "text-amber-400" },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex flex-col gap-1.5 2xl:px-4 2xl:border-r 2xl:border-slate-100 last:border-0 min-w-0 max-w-full">
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest leading-none mb-0.5">{label}</p>
-                <p className={cn("text-[12px] font-black break-all whitespace-normal leading-relaxed", color)}>{value || "---"}</p>
+                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest leading-none mb-0.5">{label}</p>
+                <p className={cn("text-[12px] font-bold break-all whitespace-normal leading-relaxed", color)}>{value || "---"}</p>
               </div>
             ))}
           </div>
@@ -341,7 +341,7 @@ export default function LedgerDetailsPage() {
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">Global Ref ID</p>
                 </div>
                 <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3 min-w-0">
-                  <p className="flex-1 min-w-0 text-right text-[11px] font-mono font-black tracking-tight text-slate-800 break-all" title={ledgerItem.referenceId}>{ledgerItem.referenceId}</p>
+                  <p className="flex-1 min-w-0 text-right text-[11px] font-mono font-bold tracking-tight text-slate-800 break-all" title={ledgerItem.referenceId}>{ledgerItem.referenceId}</p>
                   <button onClick={() => handleCopy(ledgerItem.referenceId)} className="text-slate-300 hover:text-indigo-600 transition-colors shrink-0"><Copy size={13} /></button>
                 </div>
               </div>
@@ -354,7 +354,7 @@ export default function LedgerDetailsPage() {
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">Operation ID</p>
                 </div>
                 <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3 min-w-0">
-                  <p className="flex-1 min-w-0 text-right text-[11px] font-mono font-black tracking-tight text-slate-800" title={ledgerItem._id}>{ledgerItem._id}</p>
+                  <p className="flex-1 min-w-0 text-right text-[11px] font-mono font-bold tracking-tight text-slate-800" title={ledgerItem._id}>{ledgerItem._id}</p>
                   <button onClick={() => handleCopy(ledgerItem._id)} className="text-slate-300 hover:text-indigo-600 transition-colors shrink-0"><Copy size={13} /></button>
                 </div>
               </div>
@@ -366,7 +366,7 @@ export default function LedgerDetailsPage() {
                   </div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">Timestamp</p>
                 </div>
-                <p className="flex-1 text-right text-[12px] font-black text-slate-800">{formatDate(ledgerItem.date)}</p>
+                <p className="flex-1 text-right text-[12px] font-bold text-slate-800">{formatDate(ledgerItem.date)}</p>
               </div>
             </div>
           </BalancedCard>
@@ -376,7 +376,7 @@ export default function LedgerDetailsPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-3 px-2">
             <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
-            <h3 className="text-xl font-black text-slate-900 tracking-tight">Financial Precision</h3>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Financial Precision</h3>
           </div>
 
           <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
@@ -406,12 +406,12 @@ export default function LedgerDetailsPage() {
                   <div className="h-2 w-2 rounded-full bg-slate-200" />
                   <div className="h-2 w-2 rounded-full bg-slate-200" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 ml-2 flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-600 ml-2 flex items-center gap-2">
                   <Globe size={12} className="animate-pulse" /> Diagnostic Request
                 </span>
               </div>
               <div className="flex items-center gap-4">
-                <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(TXN_DATA.apiRequest.plainText)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(TXN_DATA.apiRequest.plainText)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-bold uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
                   <Copy size={11} /> Copy Payload
                 </motion.button>
               </div>
@@ -433,12 +433,12 @@ export default function LedgerDetailsPage() {
                   <div className="h-2 w-2 rounded-full bg-slate-200" />
                   <div className="h-2 w-2 rounded-full bg-slate-200" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-rose-600 ml-2 flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-rose-600 ml-2 flex items-center gap-2">
                   <Activity size={12} /> Server Response
                 </span>
               </div>
               <div className="flex items-center gap-4">
-                <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(JSON.stringify(TXN_DATA.apiResponse, null, 2))} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(JSON.stringify(TXN_DATA.apiResponse, null, 2))} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-bold uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
                   <Copy size={11} /> Copy JSON
                 </motion.button>
               </div>
@@ -456,7 +456,7 @@ export default function LedgerDetailsPage() {
         <div className="flex items-center justify-center py-8 opacity-20 mt-4">
           <div className="flex items-center gap-4">
             <ShieldCheck size={20} className="text-slate-400" />
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">Encrypted Audit Log - Internal Use Only</p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.4em]">Encrypted Audit Log - Internal Use Only</p>
           </div>
         </div>
 
@@ -482,5 +482,3 @@ export default function LedgerDetailsPage() {
     </PageLayout>
   );
 }
-
-

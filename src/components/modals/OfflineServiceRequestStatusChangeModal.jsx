@@ -86,7 +86,7 @@ export default function OfflineServiceRequestStatusChangeModal({
 
             <div className="relative flex items-center justify-between p-8 pb-4">
               <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                   Update Status
                 </h2>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -105,7 +105,7 @@ export default function OfflineServiceRequestStatusChangeModal({
 
             <div className="relative p-8 pt-2 space-y-6">
               <div className="space-y-2.5">
-                <Label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">
                   Select Status
                 </Label>
                 <Select
@@ -132,7 +132,7 @@ export default function OfflineServiceRequestStatusChangeModal({
                   <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">
                     Action Result
                   </p>
-                  <h3 className={cn("text-xl font-black tracking-tight", theme.main)}>
+                  <h3 className={cn("text-xl font-bold tracking-tight", theme.main)}>
                     {currentDetails.label}
                   </h3>
                 </div>
@@ -148,7 +148,7 @@ export default function OfflineServiceRequestStatusChangeModal({
                   <div className="space-y-1.5 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <div className={cn("h-1.5 w-1.5 rounded-full", theme.bg)} />
-                      <p className={cn("text-[10px] font-black uppercase tracking-widest opacity-80", theme.main)}>
+                      <p className={cn("text-[10px] font-bold uppercase tracking-widest opacity-80", theme.main)}>
                         Update Summary
                       </p>
                     </div>
@@ -160,7 +160,7 @@ export default function OfflineServiceRequestStatusChangeModal({
               </div>
 
               <div className="space-y-2.5">
-                <Label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">
                   Internal Remarks
                 </Label>
                 <div className="relative">
@@ -196,7 +196,7 @@ export default function OfflineServiceRequestStatusChangeModal({
                 </Button>
                 <Button
                   className={cn(
-                    "rounded-xl text-white px-8 h-11 font-black tracking-tight transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg",
+                    "rounded-xl text-white px-8 h-11 font-bold tracking-tight transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg",
                     currentDetails.color,
                     theme.shadow,
                   )}

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useFetch } from "../../../../hooks/useFetch";
 import { Check, UserPlus, XCircle } from "lucide-react";
 import { usePatch } from "../../../../hooks/usePatch";
-import { formatDate, handleValidationError } from "../../../../utils/helperFunction";
+import { formatDate, handleValidationError, ServiceLabel } from "../../../../utils/helperFunction";
 import { Button } from "../../../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Select } from "../../../../components/ui/select";
@@ -29,20 +29,21 @@ export default function ServiceRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [processing, setProcessing] = useState(false);
-  const [filter, setFilter] = useState({ service: null });
+  const [filter, setFilter] = useState({ service: null, status: null });
   const [serviceList, setServiceList] = useState([]);
+  const [statusList, setStatusList] = useState([
+    { label: "All", value: "" },
+    { label: "Assigned", value: "assigned" },
+    { label: "Rejected", value: "rejected" },
+    { label: "Pending", value: "pending" },
+  ]);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
-  const services = {
-    aeps: "AEPS",
-    dmt: "DMT",
-    bbps: "Bill Payment",
-    recharge: "Mobile Recharge"
-  }
+
 
   const buildApiUrl = () => {
-    let url = `${apiEndpoints?.serviceRequest}?page=${pageIndex}&limit=${pageSize}&service=${filter?.service || ""}`;
+    let url = `${apiEndpoints?.serviceRequest}?page=${pageIndex}&limit=${pageSize}&service=${filter?.service || ""}&status=${filter?.status || ""}`;
     if (searchQuery) {
       url += `&search=${encodeURIComponent(searchQuery)}`;
     }
@@ -106,7 +107,7 @@ export default function ServiceRequestsPage() {
 
   useEffect(() => {
     fetchUsersRequest();
-  }, [pageIndex, pageSize, statusFilter, searchQuery, filter.service]);
+  }, [pageIndex, pageSize, statusFilter, searchQuery, filter.service, filter.status]);
 
   const handlePageChange = (newPageIndex, newPageSize) => {
     if (newPageIndex !== pageIndex || newPageSize !== pageSize) {
@@ -247,7 +248,7 @@ export default function ServiceRequestsPage() {
         header: "SERVICE",
         cell: ({ row }) => (
           <span className="capitalize font-medium text-slate-600 text-[13px]">
-            {services[row.getValue("serviceName")] || row.getValue("serviceName") || "N/A"}
+            {ServiceLabel(row.getValue("serviceName")) || row.getValue("serviceName") || "N/A"}
           </span>
         ),
       },
@@ -270,7 +271,7 @@ export default function ServiceRequestsPage() {
                 className="max-w-[300px] p-3 bg-white border border-slate-200/60 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] rounded-xl z-[100]"
               >
                 <div className="space-y-1.5">
-                  <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Full Description</p>
+                  <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-widest">Full Description</p>
                   <p className="text-[11px] font-medium text-slate-600 leading-relaxed break-words">
                     {text}
                   </p>
@@ -300,6 +301,15 @@ export default function ServiceRequestsPage() {
               value={filter.service}
               onChange={(val) => setFilter({ ...filter, service: val })}
               options={serviceList}
+              className="h-9 md:h-10 bg-white! border-slate-200 rounded-xl shadow-xs text-slate-700 font-medium w-full text-[12px]"
+            />
+          </div>
+          <div className="flex-1 md:w-full lg:flex-1 xl:flex-initial min-w-[140px] xl:min-w-[160px]">
+            <Select
+              placeholder="Select Status"
+              value={filter.status}
+              onChange={(val) => setFilter({ ...filter, status: val })}
+              options={statusList}
               className="h-9 md:h-10 bg-white! border-slate-200 rounded-xl shadow-xs text-slate-700 font-medium w-full text-[12px]"
             />
           </div>

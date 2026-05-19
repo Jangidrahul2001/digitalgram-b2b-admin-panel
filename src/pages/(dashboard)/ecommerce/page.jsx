@@ -67,7 +67,7 @@ export default function EcommercePage() {
         {/* Header Section */}
         {!isDetailView && (
           <div className="px-1">
-            <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
+            <h1 className="text-3xl font-bold tracking-tighter text-slate-900 uppercase">
               E-Commerce
             </h1>
             <p className="text-sm font-medium text-slate-500">Inventory Management & Fulfillment Tracking</p>

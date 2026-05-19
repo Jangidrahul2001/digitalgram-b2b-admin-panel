@@ -38,7 +38,7 @@ export function useFetch(
         setIsLoading(false);
         throw error;
       } finally {
-        // setIsLoading(false);
+        setIsLoading(false);
       }
     },
     [url],

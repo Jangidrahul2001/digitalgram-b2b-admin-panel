@@ -31,7 +31,12 @@ export default function LoginPage() {
     onSuccess: (data) => {
       if (data.success) {
         setIsLoading(false);
-        toast.success(data?.message|| "OTP sent successfully. Please check your email.");
+        // Save data for OTP and navigate only after successful initial login/OTP trigger
+        sessionStorage.setItem(
+          "temp_auth_data",
+          JSON.stringify({ email, password }),
+        );
+        navigate("/otp");
       }
     },
     onError: (error) => {
@@ -40,7 +45,6 @@ export default function LoginPage() {
         description: error.message || "Invalid credentials. Please try again.",
       });
       setIsLoading(false);
-      navigate("/login"); // Return to login if authentication fails
     },
   });
 
@@ -57,14 +61,7 @@ export default function LoginPage() {
 
     setIsLoading(true);
 
-    // Save data for OTP and navigate immediately
-    sessionStorage.setItem(
-      "temp_auth_data",
-      JSON.stringify({ email, password }),
-    );
-    navigate("/otp");
-
-    // Perform background login
+    // Perform login which triggers OTP
     loginAdmin({ email, password });
   };
 

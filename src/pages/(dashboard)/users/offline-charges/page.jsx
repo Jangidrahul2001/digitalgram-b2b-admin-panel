@@ -386,7 +386,7 @@ export default function OfflineChargePage() {
               className="max-w-[300px] p-3 bg-white border border-slate-200/60 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] rounded-xl z-[100]"
             >
               <div className="space-y-1.5">
-                <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Full Description</p>
+                <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-widest">Full Description</p>
                 <p className="text-[11px] font-medium text-slate-600 leading-relaxed break-words">
                   {text}
                 </p>
